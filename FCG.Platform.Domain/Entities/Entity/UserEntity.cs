@@ -1,6 +1,6 @@
-﻿using FCG.Platform.Domain.General;
+﻿using FCG.Platform.Domain.Entities.General;
 
-namespace FCG.Platform.Domain.Entity
+namespace FCG.Platform.Domain.Entities.Entity
 {
     public class UserEntity : BaseEntity
     {

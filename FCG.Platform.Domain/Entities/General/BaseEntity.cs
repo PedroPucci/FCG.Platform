@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace FCG.Platform.Domain.General
+namespace FCG.Platform.Domain.Entities.General
 {
     public abstract class BaseEntity
     {
