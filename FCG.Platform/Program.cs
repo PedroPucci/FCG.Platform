@@ -47,7 +47,6 @@ if (app.Environment.IsDevelopment())
 if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 
-app.UseStaticFiles();
 app.UseRouting();
 app.UseCors();
 app.UseSession();
@@ -55,8 +54,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+var runMigrations = builder.Configuration.GetValue<bool>("RunMigrations");
+
+if (runMigrations)
 {
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
 
     try
