@@ -1,3 +1,8 @@
 <Solution>
+  <Project Path="FCG.Platform.Application/FCG.Platform.Application.csproj" />
+  <Project Path="FCG.Platform.Domain/FCG.Platform.Domain.csproj" />
+  <Project Path="FCG.Platform.Infrastracture/FCG.Platform.Infrastracture.csproj" />
+  <Project Path="FCG.Platform.Shared/FCG.Platform.Shared.csproj" />
+  <Project Path="FCG.Platform.Test/FCG.Platform.Test.csproj" />
   <Project Path="FCG.Platform/FCG.Platform.csproj" />
 </Solution>
