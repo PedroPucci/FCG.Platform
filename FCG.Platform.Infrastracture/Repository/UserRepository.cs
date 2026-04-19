@@ -1,6 +1,7 @@
 ﻿using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Infrastracture.Connections;
+using Microsoft.EntityFrameworkCore;
 
 namespace FCG.Platform.Infrastracture.Repository
 {
@@ -13,29 +14,50 @@ namespace FCG.Platform.Infrastracture.Repository
             _context = context;
         }
 
-        public Task<UserEntity> Add(UserEntity userEntity)
+        public async Task<UserEntity> Add(UserEntity userEntity)
         {
-            throw new NotImplementedException();
+            var result = await _context.UserEntity.AddAsync(userEntity);
+            await _context.SaveChangesAsync();
+
+            return result.Entity;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<UserEntity> Update(UserEntity userEntity)
         {
-            throw new NotImplementedException();
+            var response = _context.UserEntity.Update(userEntity);
+            return response.Entity;
         }
 
-        public Task<List<UserEntity>> Get()
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var user = await GetById(id);
+
+            if (user == null)
+                return false;
+
+            _context.UserEntity.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
-        public Task<UserEntity> GetById(int id)
+        public async Task<List<UserEntity>> Get()
         {
-            throw new NotImplementedException();
+            return await _context.UserEntity
+                .AsNoTracking()
+                .OrderBy(user => user.Id)
+                .Select(user => new UserEntity
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    IsActive = user.IsActive
+                })
+            .ToListAsync();
         }
 
-        public Task<UserEntity> Update(UserEntity userEntity)
+        public async Task<UserEntity?> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _context.UserEntity.FindAsync(id);
         }
     }
 }

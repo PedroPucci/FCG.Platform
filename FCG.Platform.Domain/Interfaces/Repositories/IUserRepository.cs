@@ -8,6 +8,6 @@ namespace FCG.Platform.Domain.Interfaces.Repositories
         Task<UserEntity> Update(UserEntity userEntity);
         Task<bool> Delete(int id);
         Task<List<UserEntity>> Get();
-        Task<UserEntity> GetById(int id);
+        Task<UserEntity?> GetById(int id);
     }
 }
