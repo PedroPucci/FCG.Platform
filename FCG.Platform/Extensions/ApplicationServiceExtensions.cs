@@ -22,18 +22,17 @@ namespace FCG.Platform.Extensions
                     Version = "v1",
                     Title = "API FCG.Platform",
                     Description = @"
-                        A **API FCG.Platform** é uma solução moderna para gerenciamento de usuários e bibliotecas de jogos digitais. 
+                        A API FCG.Platform é uma solução moderna para gerenciamento de usuários e bibliotecas de jogos digitais. 
                         Desenvolvida como base da plataforma **FIAP Cloud Games (FCG)**, ela permite o controle eficiente de contas, 
                         autenticação segura e organização dos jogos adquiridos pelos usuários.
 
-                        **Principais Benefícios:**
+                        Principais Benefícios:
                         - Cadastro e gerenciamento de usuários com autenticação JWT.
                         - Controle da biblioteca de jogos adquiridos.
                         - Segurança com autenticação e autorização por níveis de acesso.
                         - Estrutura preparada para evolução com novas funcionalidades como matchmaking e servidores online.
 
-                        Com a **FCG.Platform**, a base da plataforma de games educacionais é construída de forma escalável, 
-                        segura e pronta para crescimento!
+                        Com a FCG.Platform, a base da plataforma de games educacionais é construída de forma escalável, segura e pronta para crescimento!
                         ",
                 });
 
@@ -62,7 +61,6 @@ namespace FCG.Platform.Extensions
             //services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<TokenService>();
             //services.AddScoped<BCryptoAlgorithm>();
-
 
             services.AddMvc().AddJsonOptions(options =>
             {

@@ -4,7 +4,6 @@ using FCG.Platform.Infrastracture.Connections;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -55,7 +54,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 var runMigrations = builder.Configuration.GetValue<bool>("RunMigrations");
-
 if (runMigrations)
 {
     using var scope = app.Services.CreateScope();
