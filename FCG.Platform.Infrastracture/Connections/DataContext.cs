@@ -1,4 +1,4 @@
-﻿using FCG.Platform.Domain.Entity;
+﻿using FCG.Platform.Domain.Entities.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
