@@ -2,20 +2,42 @@
 {
     public static class LogMessages
     {
-        //User
-        public static string InvalidUserInputs() => "Message: Invalid inputs to User.";
-        public static string NullOrEmptyUserEmail() => "Message: The Email field is null, empty, or whitespace.";
-        public static string UpdatingErrorUser(Exception ex) => $"Message: Error updating User: {ex.Message}";
-        public static string UpdatingSuccessUser() => "Message: Successfully updated User.";
-        public static string UserNotFound(string action) => $"Message: User not found for {action} action.";
-        public static string AddingUserError(Exception ex) => $"Message: Error adding a new User: {ex.Message}";
-        public static string AddingUserSuccess() => "Message: Successfully added a new User.";
-        public static string DeleteUserError(Exception ex) => $"Message: Error to delete a User: {ex.Message}";
-        public static string DeleteUserSuccess() => "Message: Delete with success User.";
-        public static string GetAllUserError(Exception ex) => $"Message: Error to loading the list User: {ex.Message}";
-        public static string GetAllUserSuccess() => "Message: GetAll with success User.";
-        public static string UserNotFound() => "Message: User not found.";
-        public static string PasswordInvalid() => "Message: Incorrect current password.";
-        public static string UpdatingSuccessPassword() => "Message: Password updated successfully.";
+        #region User Validation
+
+        public static string InvalidUserInputs() => "Invalid user data.";
+
+        #endregion
+
+        #region User Not Found
+
+        public static string CannotPerformActionOnUser(string action, int userId) => $"Cannot {action} user. User with id {userId} was not found.";
+
+        #endregion
+
+        #region User CRUD
+
+        public static string AddingUserError(Exception ex) => $"Error adding user. Details: {ex.Message}";
+        public static string AddingUserSuccess() => "User added successfully.";
+
+        public static string UpdatingErrorUser(Exception ex) => $"Error updating user. Details: {ex.Message}";
+        public static string UpdatingSuccessUser() => "User updated successfully.";
+
+        public static string DeleteUserError(Exception ex) => $"Error deleting user. Details: {ex.Message}";
+        public static string DeleteUserSuccess() => "User deleted successfully.";
+
+        public static string GetAllUserError(Exception ex) => $"Error retrieving users list. Details: {ex.Message}";
+        public static string GetAllUserSuccess() => "Users retrieved successfully.";
+
+        public static string GetByUserIdError(Exception ex) => $"Error retrieving user by id. Details: {ex.Message}";
+        public static string GetByUserIdSuccess() => "User retrieved successfully.";
+
+        #endregion
+
+        #region Password
+
+        public static string PasswordInvalid() => "Incorrect current password.";
+        public static string UpdatingSuccessPassword() => "Password updated successfully.";
+
+        #endregion
     }
 }
