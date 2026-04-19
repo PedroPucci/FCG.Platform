@@ -14,7 +14,7 @@ namespace FCG.Platform.Extensions.SwaggerDocumentation
 
             var routeHandlers = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
             {
-                { "user",               () => HandleUserOperations(operation, context) }
+                { "users",               () => HandleUsersOperations(operation, context) }
             };
 
             foreach (var kv in routeHandlers
@@ -28,7 +28,7 @@ namespace FCG.Platform.Extensions.SwaggerDocumentation
             }
         }
 
-        private void HandleUserOperations(OpenApiOperation operation, OperationFilterContext context)
+        private void HandleUsersOperations(OpenApiOperation operation, OperationFilterContext context)
         {
             var method = context.ApiDescription.HttpMethod;
             var path = context.ApiDescription.RelativePath?.ToLower() ?? string.Empty;
