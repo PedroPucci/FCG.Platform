@@ -6,7 +6,11 @@ namespace FCG.Platform.Extensions.ExtensionsLogs
 {
     public class LogExtension
     {
-        private static readonly string LogDirectory = "C://Users//User//Downloads//FCG-Plataform-logs";
+        private static readonly string LogDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads",
+            "FCG-Platform-logs"
+        );
 
         static LogExtension()
         {
