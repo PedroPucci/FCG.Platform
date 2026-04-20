@@ -41,7 +41,7 @@ namespace FCG.Platform.Controllers
             return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         [ProducesResponseType(typeof(List<GameEntity>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get()
