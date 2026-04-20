@@ -1,7 +1,33 @@
 # FCG Platform
 # **Descrição do projeto**
 - Plataforma backend desenvolvida em .NET para gerenciamento de usuários e jogos, com foco em boas práticas como Clean Architecture, validação de dados, logging e operações seguras via API REST.
+## **Regras de Negócio**
 
+De acordo com os requisitos do desafio, o sistema implementa as seguintes regras:
+
+### **Usuário**
+- O usuário deve possuir: Nome, E-mail e Senha.
+
+### **Validação de E-mail**
+- O e-mail deve seguir um formato válido (ex: usuario@email.com)
+
+### **Validação de Senha**
+- A senha deve conter:
+  - No mínimo 8 caracteres
+  - Pelo menos uma letra
+  - Pelo menos um número
+  - Pelo menos um caractere especial
+
+### **Cadastro de Usuário**
+- Não é permitido cadastrar usuários com dados inválidos
+
+### **Biblioteca de Jogos**
+- O usuário pode possuir uma lista de jogos associados
+---
+
+## **Observações**
+- As validações são implementadas utilizando FluentValidation
+- Os erros são tratados e retornados de forma padronizada via Result<T>
 ---
 
 # **Solução**
