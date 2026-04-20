@@ -1,4 +1,5 @@
 ﻿using FCG.Platform.Application.Services;
+using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 
 namespace FCG.Platform.Application.UnitOfWork
@@ -7,6 +8,7 @@ namespace FCG.Platform.Application.UnitOfWork
     {
         private readonly IRepositoryUoW _repositoryUoW;
         private UserService userService;
+        private GameService gameService;
 
         public UnitOfWorkService(IRepositoryUoW repositoryUoW)
         {
@@ -20,6 +22,16 @@ namespace FCG.Platform.Application.UnitOfWork
                 if (userService is null)
                     userService = new UserService(_repositoryUoW);
                 return userService;
+            }
+        }
+
+        public GameService GameService
+        {
+            get
+            {
+                if (gameService is null)
+                    gameService = new GameService(_repositoryUoW);
+                return gameService;
             }
         }
     }

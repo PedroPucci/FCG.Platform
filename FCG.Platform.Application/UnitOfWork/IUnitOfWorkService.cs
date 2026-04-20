@@ -5,5 +5,6 @@ namespace FCG.Platform.Application.UnitOfWork
     public interface IUnitOfWorkService
     {
         UserService UserService { get; }
+        GameService GameService { get; }
     }
 }
