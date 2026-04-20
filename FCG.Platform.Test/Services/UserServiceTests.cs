@@ -324,5 +324,59 @@ namespace FCG.Platform.Test.Services
             _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
             _transactionMock.Verify(x => x.Rollback(), Times.Once);
         }
+
+        [Fact]
+        public async Task GetById_Should_Return_User_When_User_Exists()
+        {
+            var userId = 1;
+
+            var user = new UserEntity
+            {
+                Id = userId,
+                Name = "Pedro",
+                Email = " PEDRO@EMAIL.COM "
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(userId))
+                .ReturnsAsync(user);
+
+            _repositoryUoWMock
+                .Setup(x => x.Commit());
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var result = await service.GetById(userId);
+
+            Assert.True(result.Success);
+            Assert.NotNull(result.Data);
+            Assert.Equal(userId, result.Data.Id);
+            Assert.Equal("Pedro", result.Data.Name);
+            Assert.Equal("pedro@email.com", result.Data.Email);
+
+            _userRepositoryMock.Verify(x => x.GetById(userId), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetById_Should_Throw_Exception_When_User_Does_Not_Exist()
+        {
+            var userId = 1;
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(userId))
+                .ReturnsAsync((UserEntity?)null);
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.GetById(userId));
+
+            Assert.Contains("Error retrieving users list", exception.Message);
+
+            _userRepositoryMock.Verify(x => x.GetById(userId), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
+            _transactionMock.Verify(x => x.Rollback(), Times.Once);
+        }
     }
 }
