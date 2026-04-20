@@ -1,4 +1,5 @@
-﻿using FCG.Platform.Domain.Entities.Entity;
+﻿using FCG.Platform.Domain.Entities.Dto;
+using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.OperationResult;
 
 namespace FCG.Platform.Domain.Interfaces.Services
@@ -8,7 +9,7 @@ namespace FCG.Platform.Domain.Interfaces.Services
         Task<Result<UserEntity>> Add(UserEntity userEntity);
         Task<Result<UserEntity>> Update(UserEntity userEntity);
         Task<bool> Delete(int id);
-        Task<List<UserEntity>> Get();
-        Task<Result<UserEntity>> GetById(int id);
+        Task<List<UserResponse>> Get();
+        Task<Result<UserResponse>> GetById(int id);
     }
 }

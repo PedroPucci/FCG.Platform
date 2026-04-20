@@ -1,4 +1,5 @@
-﻿using FCG.Platform.Domain.Entities.Entity;
+﻿using FCG.Platform.Domain.Entities.Dto;
+using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Domain.OperationResult;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
@@ -26,6 +27,8 @@ namespace FCG.Platform.Application.Services
                 var isValid = await IsValidUserRequest(userEntity);
                 if (!isValid.Success)
                     return Result<UserEntity>.Error(isValid.Message);
+
+                userEntity.IsActive = true;
 
                 await _repositoryUoW.UserRepository.Add(userEntity);
                 await _repositoryUoW.SaveAsync();
@@ -93,13 +96,13 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<List<UserEntity>> Get()
+        public async Task<List<UserResponse>> Get()
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
             try
             {
-                List<UserEntity> userEntities = await _repositoryUoW.UserRepository.Get();
+                List<UserResponse> userEntities = await _repositoryUoW.UserRepository.Get();
                 _repositoryUoW.Commit();
 
                 Log.Information(LogMessages.GetAllUserSuccess());
@@ -113,19 +116,34 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<Result<UserEntity>> GetById(int id)
+        public async Task<Result<UserResponse>> GetById(int id)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
             try
             {
                 var user = await GetExistingUserOrThrowAsync(id, "retrieve");
+
+                if (user is null)
+                {
+                    transaction.Rollback();
+                    var message = LogMessages.CannotPerformActionOnUser("retrieve", id);
+                    Log.Error(message);
+                    return Result<UserResponse>.Error(message);
+                }
+
                 user.Email = user.Email?.Trim().ToLower();
                 user.Name = user.Name;
+
+                var userResponse = new UserResponse{
+                    Email = user.Email,
+                    Name = user.Name
+                };
+
                 _repositoryUoW.Commit();
 
                 Log.Information(LogMessages.GetByUserIdSuccess());
-                return Result<UserEntity>.Ok(user);
+                return Result<UserResponse>.Ok(userResponse);
             }
             catch (Exception ex)
             {
@@ -151,7 +169,7 @@ namespace FCG.Platform.Application.Services
 
         private async Task<UserEntity> GetExistingUserOrThrowAsync(int userId, string action)
         {
-            var user = await _repositoryUoW.UserRepository.GetById(userId);
+            var user = await _repositoryUoW.UserRepository.GetByIdCheck(userId);
 
             if (user is null)
             {
