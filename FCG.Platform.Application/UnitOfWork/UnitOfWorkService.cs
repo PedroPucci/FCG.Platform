@@ -1,5 +1,4 @@
 ﻿using FCG.Platform.Application.Services;
-using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 
 namespace FCG.Platform.Application.UnitOfWork

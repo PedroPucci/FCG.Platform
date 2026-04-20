@@ -10,7 +10,7 @@ namespace FCG.Platform.Infrastracture.Repository.RepositoryUoW
         private readonly DataContext _context;
         private bool _disposed = false;
         private IUserRepository? _userEntityRepository = null;
-        private IGameRepository _gameEntityRepository = null;
+        private IGameRepository? _gameEntityRepository = null;
 
         public RepositoryUoW(DataContext context)
         {
