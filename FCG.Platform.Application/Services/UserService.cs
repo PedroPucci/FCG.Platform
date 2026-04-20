@@ -95,7 +95,22 @@ namespace FCG.Platform.Application.Services
 
         public async Task<List<UserEntity>> Get()
         {
-            throw new NotImplementedException();
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                List<UserEntity> userEntities = await _repositoryUoW.UserRepository.Get();
+                _repositoryUoW.Commit();
+
+                Log.Information(LogMessages.GetAllUserSuccess());
+                return userEntities;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(LogMessages.GetAllUserError(ex));
+                throw new InvalidOperationException("Error to loading the list User. See logs for details.", ex);
+            }
         }
 
         public async Task<Result<UserEntity>> GetById(int id)
