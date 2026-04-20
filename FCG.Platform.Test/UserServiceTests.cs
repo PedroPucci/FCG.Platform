@@ -115,5 +115,95 @@ namespace FCG.Platform.Test
             _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
             _transactionMock.Verify(x => x.RollbackAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public async Task Update_Should_Return_Success_When_User_Exists()
+        {
+            var user = new UserEntity
+            {
+                Id = 1,
+                Name = "Pedro",
+                Email = "old@email.com"
+            };
+
+            var updatedUser = new UserEntity
+            {
+                Id = 1,
+                Name = "Novo Nome",
+                Email = "novo@email.com"
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(user.Id))
+                .ReturnsAsync(user);
+
+            _repositoryUoWMock
+                .Setup(x => x.SaveAsync())
+                .Returns(Task.CompletedTask);
+
+            _transactionMock
+                .Setup(x => x.CommitAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var result = await service.Update(updatedUser);
+
+            Assert.True(result.Success);
+
+            _userRepositoryMock.Verify(x => x.Update(It.Is<UserEntity>(u =>
+                u.Name == updatedUser.Name &&
+                u.Email == updatedUser.Email)), Times.Once);
+
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Once);
+            _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Update_Should_Throw_Exception_When_User_Not_Found()
+        {
+            var user = new UserEntity
+            {
+                Id = 1,
+                Name = "Pedro",
+                Email = "email@email.com"
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(user.Id))
+                .ReturnsAsync((UserEntity?)null);
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.Update(user));
+
+            Assert.Contains("Failed to update user", exception.Message);
+
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
+            _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetExistingUserOrThrowAsync_Should_Return_User_When_User_Exists()
+        {
+            var userId = 1;
+
+            var user = new UserEntity
+            {
+                Id = userId,
+                Name = "Pedro",
+                Email = "pedro@email.com"
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(userId))
+                .ReturnsAsync(user);
+
+            var service = new UserService(_repositoryUoWMock.Object);
+            var result = await service.Update(user);
+
+            Assert.True(result.Success);
+        }
     }
 }
