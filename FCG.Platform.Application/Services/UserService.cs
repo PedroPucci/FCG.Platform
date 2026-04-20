@@ -44,7 +44,28 @@ namespace FCG.Platform.Application.Services
 
         public async Task<Result<UserEntity>> Update(UserEntity userEntity)
         {
-            throw new NotImplementedException();
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                var userById = await GetExistingUserOrThrowAsync(userEntity.Id, "update");
+                userById.Email = userEntity.Email;
+                userById.Name = userEntity.Name;
+                userById.ModificationDate = DateTime.UtcNow;
+
+                _repositoryUoW.UserRepository.Update(userById);
+                await _repositoryUoW.SaveAsync();
+                await transaction.CommitAsync();
+
+                Log.Information(LogMessages.UpdatingSuccessUser());
+                return Result<UserEntity>.Ok();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(LogMessages.UpdatingErrorUser(ex));
+                throw new InvalidOperationException($"Failed to update user with id {userEntity.Id}. See logs for details.", ex);
+            }
         }
 
         public async Task<bool> Delete(int id)
@@ -74,6 +95,20 @@ namespace FCG.Platform.Application.Services
             }
 
             return Result<UserEntity>.Ok();
+        }
+
+        private async Task<UserEntity> GetExistingUserOrThrowAsync(int userId, string action)
+        {
+            var user = await _repositoryUoW.UserRepository.GetById(userId);
+
+            if (user is null)
+            {
+                var message = LogMessages.CannotPerformActionOnUser(action, userId);
+                Log.Error(message);
+                throw new InvalidOperationException(message);
+            }
+
+            return user;
         }
     }
 }
