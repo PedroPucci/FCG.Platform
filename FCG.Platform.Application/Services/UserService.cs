@@ -115,8 +115,25 @@ namespace FCG.Platform.Application.Services
 
         public async Task<Result<UserEntity>> GetById(int id)
         {
-            throw new NotImplementedException();
-        }        
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                var user = await GetExistingUserOrThrowAsync(id, "retrieve");
+                user.Email = user.Email?.Trim().ToLower();
+                user.Name = user.Name;
+                _repositoryUoW.Commit();
+
+                Log.Information(LogMessages.GetByUserIdSuccess());
+                return Result<UserEntity>.Ok(user);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(LogMessages.GetByUserIdError(ex));
+                throw new InvalidOperationException("Error retrieving the user. See inner exception for details.", ex);
+            }
+        }
 
         private async Task<Result<UserEntity>> IsValidUserRequest(UserEntity userEntity)
         {
