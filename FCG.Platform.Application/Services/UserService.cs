@@ -70,7 +70,27 @@ namespace FCG.Platform.Application.Services
 
         public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                var user = await GetExistingUserOrThrowAsync(id, "delete");
+                user.IsActive = false;
+                user.ModificationDate = DateTime.UtcNow;
+
+                _repositoryUoW.UserRepository.Update(user);
+                await _repositoryUoW.SaveAsync();
+                await transaction.CommitAsync();
+
+                Log.Information(LogMessages.DeleteUserSuccess());
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(LogMessages.DeleteUserError(ex));
+                throw new InvalidOperationException($"Failed to delete user with id {id}. See logs for details.", ex);
+            }
         }
 
         public async Task<List<UserEntity>> Get()
