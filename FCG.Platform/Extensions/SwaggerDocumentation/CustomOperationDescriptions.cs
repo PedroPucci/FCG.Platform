@@ -55,9 +55,18 @@ namespace FCG.Platform.Extensions.SwaggerDocumentation
             }
             else if (method == "GET")
             {
-                operation.Summary = "Retrieve all Users.";
-                operation.Description = "This endpoint allows you to retrieve details of all existing Users.";
-                AddResponses(operation, "200", "All Users details were successfully retrieved.");
+                if (path.Contains("{id}"))
+                {
+                    operation.Summary = "Retrieve user by id.";
+                    operation.Description = "This endpoint is responsible for retrieving an active user by id.";
+                    AddResponses(operation, "200", "User retrieved successfully.");
+                }
+                else if (path.Contains("all"))
+                {
+                    operation.Summary = "Retrieve all users.";
+                    operation.Description = "This endpoint is responsible for retrieving all users.";
+                    AddResponses(operation, "200", "All users retrieved successfully.");
+                }
             }
         }
 
@@ -87,9 +96,18 @@ namespace FCG.Platform.Extensions.SwaggerDocumentation
             }
             else if (method == "GET")
             {
-                operation.Summary = "Retrieve all Games.";
-                operation.Description = "This endpoint allows you to retrieve details of all existing Games.";
-                AddResponses(operation, "200", "All Games details were successfully retrieved.");
+                if (path.Contains("{id}"))
+                {
+                    operation.Summary = "Retrieve game by id.";
+                    operation.Description = "This endpoint is responsible for retrieving an active game by id.";
+                    AddResponses(operation, "200", "Game retrieved successfully.");
+                }
+                else if (path.Contains("all"))
+                {
+                    operation.Summary = "Retrieve all games.";
+                    operation.Description = "This endpoint is responsible for retrieving all games.";
+                    AddResponses(operation, "200", "All games retrieved successfully.");
+                }
             }
         }
 

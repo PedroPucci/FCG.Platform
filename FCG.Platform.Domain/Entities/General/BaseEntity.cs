@@ -8,6 +8,7 @@ namespace FCG.Platform.Domain.Entities.General
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonIgnore]
         public int Id { get; set; }
 
         [JsonIgnore]

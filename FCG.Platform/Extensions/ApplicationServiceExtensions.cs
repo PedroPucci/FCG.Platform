@@ -1,5 +1,11 @@
-﻿using FCG.Platform.Extensions.SwaggerDocumentation;
+﻿using FCG.Platform.Application.Services;
+using FCG.Platform.Application.UnitOfWork;
+using FCG.Platform.Domain.Interfaces.Repositories;
+using FCG.Platform.Domain.Interfaces.Services;
+using FCG.Platform.Extensions.SwaggerDocumentation;
 using FCG.Platform.Infrastracture.Connections;
+using FCG.Platform.Infrastracture.Repository;
+using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -52,15 +58,16 @@ namespace FCG.Platform.Extensions
                 });
             });
 
-            //services.AddScoped<IRepositoryUoW, RepositoryUoW>();
             //services.AddScoped<TokenService>();
-            //services.AddScoped<BCryptoAlgorithm>();
-            //services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
+            //services.AddScoped<BCryptoAlgorithm>();            
             //services.AddScoped<AuthService>();
-            //services.AddScoped<IUserService, UserService>();
-            //services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<TokenService>();
             //services.AddScoped<BCryptoAlgorithm>();
+
+            services.AddScoped<IRepositoryUoW, RepositoryUoW>();
+            services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddMvc().AddJsonOptions(options =>
             {
