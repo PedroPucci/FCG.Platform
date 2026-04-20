@@ -1,4 +1,5 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
+using FCG.Platform.Domain.Entities.Dto;
 using FCG.Platform.Domain.Entities.Entity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -26,13 +27,17 @@ namespace FCG.Platform.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UserEntity userEntity)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserRequest updateUserRequest)
         {
-            return Ok();
+            var result = await _uow.UserService.Update(id, updateUserRequest);
+
+            if (!result.Success)
+                return NotFound(result);
+
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]

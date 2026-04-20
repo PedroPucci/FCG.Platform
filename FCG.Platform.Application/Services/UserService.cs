@@ -45,29 +45,38 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<Result<UserEntity>> Update(UserEntity userEntity)
+        public async Task<Result<bool>> Update(int id, UpdateUserRequest updateUserRequest)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
             try
             {
-                var userById = await _repositoryUoW.UserRepository.GetByIdCheck(userEntity.Id);
-                userById.Email = userEntity.Email;
-                userById.Name = userEntity.Name;
-                userById.ModificationDate = DateTime.UtcNow;
+                var user = await _repositoryUoW.UserRepository.GetByIdCheck(id);
 
-                _repositoryUoW.UserRepository.Update(userById);
+                if (user is null)
+                {
+                    var message = LogMessages.CannotPerformActionOnUser("update", id);
+                    Log.Error(message);
+                    return Result<bool>.Error(message);
+                }
+
+                user.Email = updateUserRequest.Email;
+                user.Name = updateUserRequest.Name;
+                user.IsActive = updateUserRequest.IsActive;
+                user.ModificationDate = DateTime.UtcNow;
+
+                _repositoryUoW.UserRepository.Update(user);
                 await _repositoryUoW.SaveAsync();
                 await transaction.CommitAsync();
 
                 Log.Information(LogMessages.UpdatingSuccessUser());
-                return Result<UserEntity>.Ok();
+                return Result<bool>.Ok(true);
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
                 Log.Error(LogMessages.UpdatingErrorUser(ex));
-                throw new InvalidOperationException($"Failed to update user with id {userEntity.Id}. See logs for details.", ex);
+                throw new InvalidOperationException($"Failed to update user with id. See logs for details.", ex);
             }
         }
 
