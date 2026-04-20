@@ -51,7 +51,7 @@ namespace FCG.Platform.Application.Services
 
             try
             {
-                var userById = await GetExistingUserOrThrowAsync(userEntity.Id, "update");
+                var userById = await _repositoryUoW.UserRepository.GetByIdCheck(userEntity.Id);
                 userById.Email = userEntity.Email;
                 userById.Name = userEntity.Name;
                 userById.ModificationDate = DateTime.UtcNow;
@@ -77,7 +77,7 @@ namespace FCG.Platform.Application.Services
 
             try
             {
-                var user = await GetExistingUserOrThrowAsync(id, "delete");
+                var user = await _repositoryUoW.UserRepository.GetByIdCheck(id);
                 user.IsActive = false;
                 user.ModificationDate = DateTime.UtcNow;
 
@@ -122,22 +122,21 @@ namespace FCG.Platform.Application.Services
 
             try
             {
-                var user = await GetExistingUserOrThrowAsync(id, "retrieve");
+                var user = await _repositoryUoW.UserRepository.GetByIdCheck(id);
 
                 if (user is null)
                 {
                     transaction.Rollback();
+
                     var message = LogMessages.CannotPerformActionOnUser("retrieve", id);
                     Log.Error(message);
+
                     return Result<UserResponse>.Error(message);
                 }
 
-                user.Email = user.Email?.Trim().ToLower();
-                user.Name = user.Name;
-
                 var userResponse = new UserResponse{
-                    Email = user.Email,
-                    Name = user.Name
+                    Email = user?.Email,
+                    Name = user?.Name
                 };
 
                 _repositoryUoW.Commit();
@@ -165,20 +164,6 @@ namespace FCG.Platform.Application.Services
             }
 
             return Result<UserEntity>.Ok();
-        }
-
-        private async Task<UserEntity> GetExistingUserOrThrowAsync(int userId, string action)
-        {
-            var user = await _repositoryUoW.UserRepository.GetByIdCheck(userId);
-
-            if (user is null)
-            {
-                var message = LogMessages.CannotPerformActionOnUser(action, userId);
-                Log.Error(message);
-                throw new InvalidOperationException(message);
-            }
-
-            return user;
         }
     }
 }
