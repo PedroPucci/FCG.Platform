@@ -5,7 +5,7 @@ using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 
-namespace FCG.Platform.Test
+namespace FCG.Platform.Test.Services
 {
     public class UserServiceTests
     {
@@ -261,6 +261,68 @@ namespace FCG.Platform.Test
 
             _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
             _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Get_Should_Return_User_List_When_Successful()
+        {
+            var users = new List<UserEntity>
+            {
+                new UserEntity
+                {
+                    Id = 1,
+                    Name = "Pedro",
+                    Email = "pedro@email.com",
+                    Password = "Senha@123",
+                    IsActive = true
+                },
+                new UserEntity
+                {
+                    Id = 2,
+                    Name = "Maria",
+                    Email = "maria@email.com",
+                    Password = "Senha@123",
+                    IsActive = true
+                }
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.Get())
+                .ReturnsAsync(users);
+
+            _repositoryUoWMock
+                .Setup(x => x.Commit());
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var result = await service.Get();
+
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Equal("Pedro", result[0].Name);
+            Assert.Equal("Maria", result[1].Name);
+
+            _userRepositoryMock.Verify(x => x.Get(), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Once);
+        }
+
+        [Fact]
+        public async Task Get_Should_Throw_Exception_When_Repository_Fails()
+        {
+            _userRepositoryMock
+                .Setup(x => x.Get())
+                .ThrowsAsync(new Exception("Database error"));
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.Get());
+
+            Assert.Contains("Error to loading the list User", exception.Message);
+
+            _userRepositoryMock.Verify(x => x.Get(), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
+            _transactionMock.Verify(x => x.Rollback(), Times.Once);
         }
     }
 }
