@@ -23,7 +23,7 @@ namespace FCG.Platform.Extensions.ExtensionsLogs
             {
                 Directory.CreateDirectory(LogDirectory);
                 Log.Logger = new LoggerConfiguration()
-                    .WriteTo.Console(LogEventLevel.Debug)
+                    //.WriteTo.Console(LogEventLevel.Debug)
                     .WriteTo.File(Path.Combine(LogDirectory, "log-.txt"), rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, fileSizeLimitBytes: 1000000)
                     .CreateLogger();
             }

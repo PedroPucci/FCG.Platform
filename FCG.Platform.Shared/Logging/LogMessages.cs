@@ -19,19 +19,19 @@ namespace FCG.Platform.Shared.Logging
         #region User CRUD
 
             public static string AddingUserError(Exception ex) => $"Error adding user. Details: {ex.Message}";
-            public static string AddingUserSuccess(UserEntity userEntity) => $"User {userEntity.Name} added successfully.";
+            public static string AddingUserSuccess(UserEntity userEntity) => $"User name:{userEntity.Name} - id:{userEntity.Id} added successfully.";
 
             public static string UpdatingErrorUser(Exception ex) => $"Error updating user. Details: {ex.Message}";
-            public static string UpdatingSuccessUser(UserEntity userEntity) => $"User {userEntity.Name} updated successfully.";
+            public static string UpdatingSuccessUser(UserEntity userEntity) => $"User name:{userEntity.Name} - id:{userEntity.Id} updated successfully.";
 
             public static string DeleteUserError(Exception ex) => $"Error deleting user. Details: {ex.Message}";
-            public static string DeleteUserSuccess(UserEntity userEntity) => $"User {userEntity.Name} deleted successfully.";
+            public static string DeleteUserSuccess(UserEntity userEntity) => $"User name:{userEntity.Name} - id:{userEntity.Id} deleted successfully.";
 
             public static string GetAllUserError(Exception ex) => $"Error retrieving users list. Details: {ex.Message}";
             public static string GetAllUserSuccess() => "Users retrieved successfully.";
 
             public static string GetByUserIdError(Exception ex) => $"Error retrieving user by id. Details: {ex.Message}";
-            public static string GetByUserIdSuccess() => "User retrieved successfully.";
+            public static string GetByUserIdSuccess(UserEntity userEntity) => $"User name:{userEntity.Name} - id:{userEntity.Id} retrieved successfully.";
 
         #endregion
 

@@ -161,7 +161,7 @@ namespace FCG.Platform.Application.Services
 
                 _repositoryUoW.Commit();
 
-                Log.Information(LogMessages.GetByUserIdSuccess());
+                Log.Information(LogMessages.GetByUserIdSuccess(user));
                 return Result<UserResponse>.Ok(userResponse);
             }
             catch (Exception ex)
