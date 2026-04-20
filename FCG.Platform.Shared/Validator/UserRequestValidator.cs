@@ -22,6 +22,12 @@ namespace FCG.Platform.Shared.Validator
                     .WithMessage(UserErrors.User_Error_PasswordLengthLessEight.Description())
                 .Matches(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$")
                     .WithMessage(UserErrors.User_Error_PasswordInvalid.Description());
+
+            RuleFor(p => p.Name)
+                .NotEmpty()
+                    .WithMessage(UserErrors.User_Error_NameCanNotBeNullOrEmpty.Description())
+                .MinimumLength(8)
+                    .WithMessage(UserErrors.User_Error_NameLengthLessEight.Description());
         }
     }
 }
