@@ -71,13 +71,24 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<Result<bool>> Delete(int id)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
             try
             {
                 var user = await _repositoryUoW.UserRepository.GetByIdCheck(id);
+
+                if (user is null)
+                {
+                    transaction.Rollback();
+
+                    var message = LogMessages.CannotPerformActionOnUser("retrieve", id);
+                    Log.Error(message);
+
+                    return Result<bool>.Error(message);
+                }
+
                 user.IsActive = false;
                 user.ModificationDate = DateTime.UtcNow;
 
@@ -86,7 +97,7 @@ namespace FCG.Platform.Application.Services
                 await transaction.CommitAsync();
 
                 Log.Information(LogMessages.DeleteUserSuccess());
-                return true;
+                return Result<bool>.Ok();
             }
             catch (Exception ex)
             {

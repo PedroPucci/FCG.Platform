@@ -39,7 +39,12 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            return Ok();
+            var result = await _uow.UserService.Delete(id);
+
+            if (!result.Success)
+                return NotFound(result);
+
+            return NoContent();
         }
 
         [HttpGet("all")]
