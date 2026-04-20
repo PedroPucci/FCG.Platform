@@ -34,7 +34,7 @@ namespace FCG.Platform.Application.Services
                 await _repositoryUoW.SaveAsync();
                 await transaction.CommitAsync();
 
-                Log.Information(LogMessages.AddingUserSuccess());
+                Log.Information(LogMessages.AddingUserSuccess(userEntity));
                 return Result<UserEntity>.Ok();
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace FCG.Platform.Application.Services
                 await _repositoryUoW.SaveAsync();
                 await transaction.CommitAsync();
 
-                Log.Information(LogMessages.UpdatingSuccessUser());
+                Log.Information(LogMessages.UpdatingSuccessUser(user));
                 return Result<bool>.Ok(true);
             }
             catch (Exception ex)
@@ -105,7 +105,7 @@ namespace FCG.Platform.Application.Services
                 await _repositoryUoW.SaveAsync();
                 await transaction.CommitAsync();
 
-                Log.Information(LogMessages.DeleteUserSuccess());
+                Log.Information(LogMessages.DeleteUserSuccess(user));
                 return Result<bool>.Ok();
             }
             catch (Exception ex)
