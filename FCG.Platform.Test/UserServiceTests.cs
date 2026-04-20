@@ -205,5 +205,62 @@ namespace FCG.Platform.Test
 
             Assert.True(result.Success);
         }
+
+        [Fact]
+        public async Task Delete_Should_Return_True_When_User_Exists()
+        {
+            var userId = 1;
+
+            var user = new UserEntity
+            {
+                Id = userId,
+                Name = "Pedro",
+                Email = "pedro@email.com",
+                IsActive = true
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(userId))
+                .ReturnsAsync(user);
+
+            _repositoryUoWMock
+                .Setup(x => x.SaveAsync())
+                .Returns(Task.CompletedTask);
+
+            _transactionMock
+                .Setup(x => x.CommitAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var result = await service.Delete(userId);
+
+            Assert.True(result);
+            Assert.False(user.IsActive);
+
+            _userRepositoryMock.Verify(x => x.Update(It.IsAny<UserEntity>()), Times.Once);
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Once);
+            _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Delete_Should_Throw_Exception_When_User_Not_Found()
+        {
+            var userId = 1;
+
+            _userRepositoryMock
+                .Setup(x => x.GetById(userId))
+                .ReturnsAsync((UserEntity?)null);
+
+            var service = new UserService(_repositoryUoWMock.Object);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.Delete(userId));
+
+            Assert.Contains("Failed to delete user", exception.Message);
+
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
+            _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
     }
 }
