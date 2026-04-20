@@ -21,8 +21,6 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Add([FromBody] UserEntity userEntity)
         {
-            //var result = await _uow.UserService.Add(userEntity);
-            //return Ok(result);
             return Ok();
         }
 

@@ -22,10 +22,9 @@ namespace FCG.Platform.Infrastracture.Repository
             return result.Entity;
         }
 
-        public async Task<UserEntity> Update(UserEntity userEntity)
+        public UserEntity Update(UserEntity userEntity)
         {
-            var response = _context.UserEntity.Update(userEntity);
-            return response.Entity;
+            return _context.UserEntity.Update(userEntity).Entity;
         }
 
         public async Task<bool> Delete(int id)
