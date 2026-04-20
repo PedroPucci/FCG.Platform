@@ -10,6 +10,7 @@ namespace FCG.Platform.Infrastracture.Repository.RepositoryUoW
         private readonly DataContext _context;
         private bool _disposed = false;
         private IUserRepository? _userEntityRepository = null;
+        private IGameRepository _gameEntityRepository = null;
 
         public RepositoryUoW(DataContext context)
         {
@@ -25,6 +26,18 @@ namespace FCG.Platform.Infrastracture.Repository.RepositoryUoW
                     _userEntityRepository = new UserRepository(_context);
                 }
                 return _userEntityRepository;
+            }
+        }
+
+        public IGameRepository GameRepository
+        {
+            get
+            {
+                if (_gameEntityRepository is null)
+                {
+                    _gameEntityRepository = new GameRepository(_context);
+                }
+                return _gameEntityRepository;
             }
         }
 

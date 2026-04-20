@@ -19,6 +19,7 @@ namespace FCG.Platform.Infrastracture.Connections
         }
 
         public DbSet<UserEntity> UserEntity { get; set; }
+        public DbSet<GameEntity> GameEntity { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
