@@ -14,7 +14,8 @@ namespace FCG.Platform.Extensions.SwaggerDocumentation
 
             var routeHandlers = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
             {
-                { "users",               () => HandleUsersOperations(operation, context) }
+                { "users",               () => HandleUsersOperations(operation, context) },
+                { "games",               () => HandleGamesOperations(operation, context) }
             };
 
             foreach (var kv in routeHandlers
@@ -57,6 +58,38 @@ namespace FCG.Platform.Extensions.SwaggerDocumentation
                 operation.Summary = "Retrieve all Users.";
                 operation.Description = "This endpoint allows you to retrieve details of all existing Users.";
                 AddResponses(operation, "200", "All Users details were successfully retrieved.");
+            }
+        }
+
+        private void HandleGamesOperations(OpenApiOperation operation, OperationFilterContext context)
+        {
+            var method = context.ApiDescription.HttpMethod;
+            var path = context.ApiDescription.RelativePath?.ToLower() ?? string.Empty;
+
+            if (method == "POST")
+            {
+                operation.Summary = "Create a new Game.";
+                operation.Description = "This endpoint allows you to create a new Game by providing the necessary details.";
+                AddResponses(operation, "200", "The Game was successfully created.");
+            }
+            else if (method == "PUT")
+            {
+                operation.Summary = "Update an existing Game.";
+                operation.Description = "This endpoint allows you to update an existing Game by providing the necessary details.";
+                AddResponses(operation, "200", "The Game was successfully updated.");
+            }
+            else if (method == "DELETE")
+            {
+                operation.Summary = "Delete an existing Game.";
+                operation.Description = "This endpoint allows you to delete an existing Game by providing the ID.";
+                AddResponses(operation, "200", "The Game was successfully deleted.");
+                AddResponses(operation, "404", "Game not found. Please verify the ID.");
+            }
+            else if (method == "GET")
+            {
+                operation.Summary = "Retrieve all Games.";
+                operation.Description = "This endpoint allows you to retrieve details of all existing Games.";
+                AddResponses(operation, "200", "All Games details were successfully retrieved.");
             }
         }
 
