@@ -39,7 +39,7 @@ namespace FCG.Platform.Infrastracture.Connections
                       .UseIdentityColumn()
                       .ValueGeneratedOnAdd();
 
-                entity.Property(g => g.Title)
+                entity.Property(g => g.Name)
                       .IsRequired()
                       .HasMaxLength(150);
 

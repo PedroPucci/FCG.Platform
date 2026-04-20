@@ -47,7 +47,8 @@ namespace FCG.Platform.Infrastracture.Repository
             .OrderBy(game => game.Id)
             .Select(game => new GameEntity
             {
-                Id = game.Id,
+                Id = game.Id,                
+                Name = game.Name,
                 Description = game.Description
             })
             .ToListAsync();
