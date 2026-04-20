@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FCG.Platform.Domain.Entities.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace FCG.Platform.Infrastracture.Connections
 {
@@ -6,54 +7,73 @@ namespace FCG.Platform.Infrastracture.Connections
     {
         public static void ConfigureModels(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<UserEntity>(entity =>
-            //{
-            //    entity.HasKey(u => u.Id);
+            modelBuilder.Entity<UserEntity>(entity =>
+            {
+                entity.HasKey(u => u.Id);
 
-            //    entity.Property(u => u.Id)
-            //          .UseIdentityByDefaultColumn()
-            //          .ValueGeneratedOnAdd();
+                entity.Property(u => u.Id)
+                      .UseIdentityColumn()
+                      .ValueGeneratedOnAdd();
 
-            //    entity.Property(u => u.Email).IsRequired();
-            //    entity.Property(u => u.Password).IsRequired();
-            //    entity.Property(u => u.Cpf).HasMaxLength(14);
-            //    entity.Property(u => u.IsActive).IsRequired();
+                entity.Property(u => u.Name)
+                      .IsRequired()
+                      .HasMaxLength(150);
 
-            //    entity.HasOne(u => u.PessoalProfile)
-            //          .WithOne(p => p.User)
-            //          .HasForeignKey<PessoalProfileEntity>(p => p.UserId)
-            //          .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(u => u.Email)
+                      .IsRequired()
+                      .HasMaxLength(150);
 
-            //    entity.HasOne(u => u.ProfessionalProfile)
-            //          .WithOne(p => p.User)
-            //          .HasForeignKey<ProfessionalProfileEntity>(p => p.UserId)
-            //          .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(u => u.Password)
+                      .IsRequired()
+                      .HasMaxLength(255);
 
-            //    entity.HasMany(u => u.Courses)
-            //          .WithOne(c => c.User)
-            //          .HasForeignKey(c => c.UserId)
-            //          .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(u => u.Email)
+                      .IsUnique();
+            });
 
-            //    entity.HasOne(u => u.Department)
-            //          .WithOne(d => d.User)
-            //          .HasForeignKey<DepartmentEntity>(d => d.UserId)
-            //          .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<GameEntity>(entity =>
+            {
+                entity.HasKey(g => g.Id);
 
-            //    entity.HasMany(u => u.HistoryPasswords)
-            //          .WithOne(ph => ph.User)
-            //          .HasForeignKey(ph => ph.UserId)
-            //          .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(g => g.Id)
+                      .UseIdentityColumn()
+                      .ValueGeneratedOnAdd();
 
-            //    entity.HasMany(u => u.UserBadges)
-            //          .WithOne(ub => ub.User)
-            //          .HasForeignKey(ub => ub.UserId)
-            //          .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(g => g.Title)
+                      .IsRequired()
+                      .HasMaxLength(150);
 
-            //    entity.HasMany(u => u.CourseNotes)
-            //          .WithOne(n => n.Student)
-            //          .HasForeignKey(n => n.StudentId)
-            //          .OnDelete(DeleteBehavior.Restrict);
-            //});
+                entity.Property(g => g.Description)
+                      .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<UserGameEntity>(entity =>
+            {
+                entity.HasKey(ug => ug.Id);
+
+                entity.Property(ug => ug.Id)
+                      .UseIdentityColumn()
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(ug => ug.UserId)
+                      .IsRequired();
+
+                entity.Property(ug => ug.GameId)
+                      .IsRequired();
+
+                entity.HasOne(ug => ug.User)
+                      .WithMany()
+                      .HasForeignKey(ug => ug.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ug => ug.Game)
+                      .WithMany()
+                      .HasForeignKey(ug => ug.GameId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(ug => new { ug.UserId, ug.GameId })
+                      .IsUnique();
+            });
         }
     }
 }
