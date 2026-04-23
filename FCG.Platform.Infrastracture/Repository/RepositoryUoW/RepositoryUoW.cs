@@ -1,5 +1,7 @@
-﻿using FCG.Platform.Domain.Interfaces.Repositories;
+﻿using FCG.Platform.Domain.Entities.Entity;
+using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Infrastracture.Connections;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 using Serilog;
 
@@ -8,13 +10,15 @@ namespace FCG.Platform.Infrastracture.Repository.RepositoryUoW
     public class RepositoryUoW : IRepositoryUoW
     {
         private readonly DataContext _context;
+        private readonly UserManager<UserEntity> _userManager;
         private bool _disposed = false;
         private IUserRepository? _userEntityRepository = null;
         private IGameRepository? _gameEntityRepository = null;
 
-        public RepositoryUoW(DataContext context)
+        public RepositoryUoW(DataContext context, UserManager<UserEntity> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IUserRepository UserRepository
@@ -23,7 +27,7 @@ namespace FCG.Platform.Infrastracture.Repository.RepositoryUoW
             {
                 if (_userEntityRepository is null)
                 {
-                    _userEntityRepository = new UserRepository(_context);
+                    _userEntityRepository = new UserRepository(_context, _userManager);
                 }
                 return _userEntityRepository;
             }
