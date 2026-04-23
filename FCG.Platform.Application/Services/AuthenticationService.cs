@@ -1,9 +1,12 @@
-﻿using FCG.Platform.Domain.Entities.Dto;
+﻿using Azure;
+using FCG.Platform.Domain.Entities.Dto;
 using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Domain.OperationResult;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
+using FCG.Platform.Shared.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -25,6 +28,7 @@ namespace FCG.Platform.Application.Services
             var result = await _repositoryUoW.UserRepository.CheckPassword(response, userEntity.Password);
 
             var token = await CreateAccessTokenAsync(response);
+            Log.Information(LogMessages.LoginUserSuccess(response));
             return Result<string>.Ok(token);
         }
 
@@ -38,7 +42,7 @@ namespace FCG.Platform.Application.Services
                 expires: DateTime.UtcNow.AddSeconds(3600),
                 signingCredentials: signingCredentials
             );
-
+            Log.Information(LogMessages.TokenGenerateSuccess());
             return tokenOptions;
         }
         private SymmetricSecurityKey JwtSecret() => new(Encoding.UTF8.GetBytes("EAA4Cf4JnqYwBP9MSZC8cHvMSvmShHZBU27qQxZBS3ORNSoIdEz3me0QHZABLNBiEWtDmVLZBVeMF8QZCd"));

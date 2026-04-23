@@ -4,15 +4,22 @@ namespace FCG.Platform.Shared.Logging
 {
     public static class LogMessages
     {
+        #region User Authentication
+
+            public static string LoginUserSuccess(UserEntity userEntity) => $"User logged in successfully. User name:{userEntity.Name}";
+            public static string TokenGenerateSuccess() => "Token generated successfully.";
+
+        #endregion
+
         #region User Validation
 
-            public static string InvalidUserInputs() => "Invalid user data.";
+        public static string InvalidUserInputs() => "Invalid user data.";
 
         #endregion
 
         #region User Not Found
 
-            public static string CannotPerformActionOnUser(string action, string userId) => $"Cannot {action} user. User with id {userId} was not found.";
+        public static string CannotPerformActionOnUser(string action, string userId) => $"Cannot {action} user. User with id {userId} was not found.";
 
         #endregion
 
