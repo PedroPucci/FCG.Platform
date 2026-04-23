@@ -1,5 +1,4 @@
 ﻿using FCG.Platform.Application.Services;
-using FCG.Platform.Domain.Interfaces.Services;
 
 namespace FCG.Platform.Application.UnitOfWork
 {
@@ -7,5 +6,6 @@ namespace FCG.Platform.Application.UnitOfWork
     {
         UserService UserService { get; }
         GameService GameService { get; }
+        AuthenticationService AuthenticationService { get; }
     }
 }

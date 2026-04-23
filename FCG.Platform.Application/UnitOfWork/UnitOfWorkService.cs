@@ -8,6 +8,7 @@ namespace FCG.Platform.Application.UnitOfWork
         private readonly IRepositoryUoW _repositoryUoW;
         private UserService userService;
         private GameService gameService;
+        private AuthenticationService authenticationService;
 
         public UnitOfWorkService(IRepositoryUoW repositoryUoW)
         {
@@ -31,6 +32,16 @@ namespace FCG.Platform.Application.UnitOfWork
                 if (gameService is null)
                     gameService = new GameService(_repositoryUoW);
                 return gameService;
+            }
+        }
+
+        public AuthenticationService AuthenticationService
+        {
+            get
+            {
+                if (authenticationService is null)
+                    authenticationService = new AuthenticationService(_repositoryUoW);
+                return authenticationService;
             }
         }
     }

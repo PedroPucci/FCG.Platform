@@ -11,6 +11,5 @@ namespace FCG.Platform.Domain.Interfaces.Services
         Task<Result<bool>> Delete(string id);
         Task<List<UserResponse>> Get();
         Task<Result<UserResponse>> GetById(string id);
-        Task<Result<string>> Login(UserForAuthenticationDTO userEntity);
     }
 }

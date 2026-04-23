@@ -1,7 +1,6 @@
 ﻿using FCG.Platform.Domain.Entities.Entity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace FCG.Platform.Infrastracture.Connections
