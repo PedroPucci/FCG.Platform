@@ -23,6 +23,10 @@ namespace FCG.Platform.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddEndpointsApiExplorer();
+            var jwtSettings = config.GetSection("JwtSettings");
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+            var secretKey = jwtSettings["SecretKey"];
 
             services.AddDbContext<DataContext>(opt =>
             {
@@ -113,10 +117,10 @@ namespace FCG.Platform.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = "PedroIghor",
-                    ValidAudience = "https://localhost:5001",
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes("EAA4Cf4JnqYwBP9MSZC8cHvMSvmShHZBU27qQxZBS3ORNSoIdEz3me0QHZABLNBiEWtDmVLZBVeMF8QZCd")),
+                        Encoding.UTF8.GetBytes(secretKey)),
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
             });
