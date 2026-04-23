@@ -44,7 +44,6 @@ namespace FCG.Plataform.Bdd.Steps
             _request.Email = email;
         }
 
-        // 🔥 CORREÇÃO AQUI (sem regex bool)
         [Given(@"que informei para atualizacao o status ativo como true")]
         public void GivenStatusAtivoTrue()
         {
