@@ -189,7 +189,6 @@ namespace FCG.Platform.Test.Services
                 .Returns(Task.CompletedTask);
 
             var service = new UserService(_repositoryUoWMock.Object);
-
             var result = await service.Update(user.Id, updateUserRequest);
 
             Assert.True(result.Success);
@@ -205,33 +204,39 @@ namespace FCG.Platform.Test.Services
             transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        //[Fact]
-        //public async Task Update_Should_Return_Error_When_User_Not_Found()
-        //{
-        //    var userId = 1;
+        [Fact]
+        public async Task Update_Should_Return_Error_When_User_Not_Found()
+        {
+            var userId = "1";
 
-        //    var updateUserRequest = new UpdateUserRequest
-        //    {
-        //        Name = "Pedro",
-        //        Email = "email@email.com",
-        //        IsActive = true
-        //    };
+            var updateUserRequest = new UpdateUserRequest
+            {
+                Name = "Pedro",
+                Email = "email@email.com",
+                IsActive = true
+            };
 
-        //    _userRepositoryMock
-        //        .Setup(x => x.GetByIdCheck(userId))
-        //        .ReturnsAsync((UserEntity?)null);
+            var transactionMock = new Mock<IDbContextTransaction>();
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            _repositoryUoWMock
+                .Setup(x => x.BeginTransaction())
+                .Returns(transactionMock.Object);
 
-        //    var result = await service.Update(userId, updateUserRequest);
+            _userRepositoryMock
+                .Setup(x => x.GetByIdCheck(userId))
+                .ReturnsAsync((UserEntity?)null);
 
-        //    Assert.False(result.Success);
-        //    Assert.Equal($"Cannot update user. User with id {userId} was not found.", result.Message);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    _userRepositoryMock.Verify(x => x.Update(It.IsAny<UserEntity>()), Times.Never);
-        //    _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
-        //    _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
-        //}
+            var result = await service.Update(userId, updateUserRequest);
+
+            Assert.False(result.Success);
+            Assert.Equal($"Cannot update user. User with id {userId} was not found.", result.Message);
+
+            _userRepositoryMock.Verify(x => x.Update(It.IsAny<UserEntity>()), Times.Never);
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
+            transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
 
         //[Fact]
         //public async Task Delete_Should_Return_Success_When_User_Exists()
