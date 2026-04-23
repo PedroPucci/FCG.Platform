@@ -1,8 +1,8 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
 using FCG.Platform.Domain.Entities.Dto;
 using FCG.Platform.Domain.Entities.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
 
 namespace FCG.Platform.Controllers
 {
@@ -20,13 +20,14 @@ namespace FCG.Platform.Controllers
         [HttpPost()]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Add([FromBody] UserEntity userEntity)
+        public async Task<IActionResult> Add([FromBody] UserResponse userEntity)
         {
             var result = await _uow.UserService.Add(userEntity);
             return Ok(result);
         }
 
         [HttpPut("{id:int}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -1,14 +1,19 @@
 ﻿using FCG.Platform.Application.Services;
 using FCG.Platform.Application.UnitOfWork;
+using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Extensions.SwaggerDocumentation;
 using FCG.Platform.Infrastracture.Connections;
 using FCG.Platform.Infrastracture.Repository;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace FCG.Platform.Extensions
@@ -18,10 +23,19 @@ namespace FCG.Platform.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddEndpointsApiExplorer();
+
+            services.AddDbContext<DataContext>(opt =>
+            {
+                opt.UseSqlServer(config.GetConnectionString("WebApiDatabase"));
+            });
+
             services.AddSwaggerGen(opt =>
             {
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                opt.CustomSchemaIds(t => t.FullName);
+                opt.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
                 opt.SwaggerDoc("v1", new OpenApiInfo
                 {
@@ -39,35 +53,92 @@ namespace FCG.Platform.Extensions
                         - Estrutura preparada para evolução com novas funcionalidades como matchmaking e servidores online.
 
                         Com a FCG.Platform, a base da plataforma de games educacionais é construída de forma escalável, segura e pronta para crescimento!
-                        ",
+                    "
                 });
 
                 opt.OperationFilter<CustomOperationDescriptions>();
-            });
 
-            services.AddDbContext<DataContext>(opt =>
-            {
-                opt.UseSqlServer(config.GetConnectionString("WebApiDatabase"));
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Digite: Bearer {seu_token}"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                if (File.Exists(xmlPath))
+                {
+                    opt.IncludeXmlComments(xmlPath);
+                }
             });
 
             services.AddCors(opt =>
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200");
+                    policy
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:4200");
                 });
             });
 
-            //services.AddScoped<TokenService>();
-            //services.AddScoped<BCryptoAlgorithm>();            
-            //services.AddScoped<AuthService>();
-            //services.AddScoped<TokenService>();
-            //services.AddScoped<BCryptoAlgorithm>();
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "PedroIghor",
+                    ValidAudience = "https://localhost:5001",
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes("EAA4Cf4JnqYwBP9MSZC8cHvMSvmShHZBU27qQxZBS3ORNSoIdEz3me0QHZABLNBiEWtDmVLZBVeMF8QZCd")),
+                    ClockSkew = TimeSpan.FromMinutes(5)
+                };
+            });
+
+            services.AddAuthorization();
 
             services.AddScoped<IRepositoryUoW, RepositoryUoW>();
             services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddIdentity<UserEntity, ProfileEntity>(o =>
+            {
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = true;
+                o.Password.RequireUppercase = true;
+                o.Password.RequireNonAlphanumeric = true;
+                o.Password.RequiredLength = 10;
+                o.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders();
 
             services.AddMvc().AddJsonOptions(options =>
             {

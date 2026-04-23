@@ -1,10 +1,13 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
 using FCG.Platform.Domain.Entities.Entity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
 namespace FCG.Platform.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/games")]
     public class GameController : ControllerBase
@@ -16,8 +19,9 @@ namespace FCG.Platform.Controllers
             _uow = uow;
         }
 
-        [HttpPost()]
+        [HttpPost]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Add([FromBody] GameEntity gameEntity)
         {
@@ -26,8 +30,9 @@ namespace FCG.Platform.Controllers
 
         [HttpPut("{id:int}")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] GameEntity gameEntity)
         {
@@ -35,7 +40,8 @@ namespace FCG.Platform.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             return Ok();
@@ -43,6 +49,7 @@ namespace FCG.Platform.Controllers
 
         [HttpGet("all")]
         [ProducesResponseType(typeof(List<GameEntity>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get()
         {
@@ -51,6 +58,7 @@ namespace FCG.Platform.Controllers
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(GameEntity), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {

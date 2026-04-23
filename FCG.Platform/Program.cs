@@ -4,34 +4,18 @@ using FCG.Platform.Infrastracture.Connections;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.CustomSchemaIds(t => t.FullName);
-    c.ResolveConflictingActions(d => d.First());
-});
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("CorsPolicy", policy =>
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod());
-});
-
-builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
-    p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-builder.Services.AddAuthorization();
 
 LogExtension.InitializeLogger();
 var loggerSerialLog = LogExtension.GetLogger();
 loggerSerialLog.Information("Logging initialized.");
 
 var app = builder.Build();
+
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
@@ -44,13 +28,19 @@ if (app.Environment.IsDevelopment())
 }
 
 if (!app.Environment.IsDevelopment())
+{
     app.UseHttpsRedirection();
+}
 
 app.UseRouting();
-app.UseCors();
+
+app.UseCors("CorsPolicy");
+
 app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 var runMigrations = builder.Configuration.GetValue<bool>("RunMigrations");
