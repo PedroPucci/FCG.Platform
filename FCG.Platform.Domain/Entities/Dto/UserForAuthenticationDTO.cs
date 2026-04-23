@@ -1,8 +1,7 @@
 ﻿namespace FCG.Platform.Domain.Entities.Dto
 {
-    public class UserResponse
+    public class UserForAuthenticationDTO
     {
-        public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
     }
