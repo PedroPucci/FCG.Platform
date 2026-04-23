@@ -51,7 +51,7 @@ De acordo com os requisitos do desafio, o sistema implementa as seguintes regras
 - **Entity Framework (ORM)**: Para mapeamento e interação com o banco de dados.
 - **Unit of Work**: Padrão de design para gerenciar transações e persistência de dados de forma coesa.
 - **Migrations**: Gerenciamento de alterações no banco de dados.
-- **Xunit**: Para criação de testes unitários.
+- **Xunit**: Para criação de testes unitários. 3A's (Arrange, Act, Assert).
 ---
 ## **Como Executar o Projeto**
 ### **1. Configuração Inicial do Banco de Dados**
