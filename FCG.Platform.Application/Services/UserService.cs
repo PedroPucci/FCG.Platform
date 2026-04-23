@@ -5,7 +5,11 @@ using FCG.Platform.Domain.OperationResult;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 using FCG.Platform.Shared.Logging;
 using FCG.Platform.Shared.Validator;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace FCG.Platform.Application.Services
 {
@@ -18,12 +22,22 @@ namespace FCG.Platform.Application.Services
             _repositoryUoW = repositoryUoW;
         }
 
-        public async Task<Result<UserEntity>> Add(UserEntity userEntity)
+        public async Task<Result<UserEntity>> Add(UserResponse userReponse)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
             try
             {
+                var userEntity = new UserEntity
+                {
+                    Email = userReponse.Email,
+                    Name = userReponse.Name,
+                    UserName = userReponse.Email,
+                    CreateDate = DateTime.UtcNow,
+                    IsActive = true,
+                    PasswordHash = userReponse.Password
+                };
+
                 var isValid = await IsValidUserRequest(userEntity);
                 if (!isValid.Success)
                     return Result<UserEntity>.Error(isValid.Message);
@@ -45,7 +59,7 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<Result<bool>> Update(int id, UpdateUserRequest updateUserRequest)
+        public async Task<Result<bool>> Update(string id, UpdateUserRequest updateUserRequest)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
@@ -80,7 +94,7 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<Result<bool>> Delete(int id)
+        public async Task<Result<bool>> Delete(string id)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
@@ -136,7 +150,7 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public async Task<Result<UserResponse>> GetById(int id)
+        public async Task<Result<UserResponse>> GetById(string id)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
@@ -154,9 +168,11 @@ namespace FCG.Platform.Application.Services
                     return Result<UserResponse>.Error(message);
                 }
 
-                var userResponse = new UserResponse{
+                var userResponse = new UserResponse
+                {
                     Email = user?.Email,
-                    Name = user?.Name
+                    Name = user?.Name,
+                    IsActive = user?.IsActive ?? false
                 };
 
                 _repositoryUoW.Commit();
@@ -170,6 +186,53 @@ namespace FCG.Platform.Application.Services
                 Log.Error(LogMessages.GetByUserIdError(ex));
                 throw new InvalidOperationException("Error retrieving the user. See inner exception for details.", ex);
             }
+        }
+
+        public async Task<Result<string>> Login(UserForAuthenticationDTO userEntity)
+        {
+            var response = await _repositoryUoW.UserRepository.GetByEmail(userEntity.Email);
+            var result = await _repositoryUoW.UserRepository.CheckPassword(response, userEntity.Password);
+
+            var token = await CreateAccessTokenAsync(response);
+            return Result<string>.Ok(token);
+        }
+
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        {
+            var tokenOptions = new JwtSecurityToken
+            (
+                issuer: "PedroIghor",
+                audience: "https://localhost:5001",
+                claims: claims,
+                expires: DateTime.UtcNow.AddSeconds(3600),
+                signingCredentials: signingCredentials
+            );
+
+            return tokenOptions;
+        }
+        private SymmetricSecurityKey JwtSecret() => new(Encoding.UTF8.GetBytes("EAA4Cf4JnqYwBP9MSZC8cHvMSvmShHZBU27qQxZBS3ORNSoIdEz3me0QHZABLNBiEWtDmVLZBVeMF8QZCd"));
+
+
+        private async Task<string> CreateAccessTokenAsync(UserEntity user)
+        {
+            var signingCredentials = new SigningCredentials(JwtSecret(), SecurityAlgorithms.HmacSha256);
+            var claims = await GetUserClaimsAsync(user);
+            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
+
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        }
+
+        private async Task<List<Claim>> GetUserClaimsAsync(UserEntity user)
+        {
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, user.Id.ToString())
+            };
+
+            if (!string.IsNullOrWhiteSpace(user.Name))
+                claims.Add(new Claim(ClaimTypes.GivenName, user.Name));
+
+            return claims;
         }
 
         private async Task<Result<UserEntity>> IsValidUserRequest(UserEntity userEntity)

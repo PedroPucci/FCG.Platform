@@ -5,12 +5,11 @@ namespace FCG.Platform.Domain.Interfaces.Repositories
 {
     public interface IUserRepository
     {
-        Task<UserEntity> Add(UserResponse userEntity);
+        Task<UserEntity> Add(UserEntity userEntity);
         UserEntity Update(UserEntity userEntity);
-        Task<bool> Delete(int id);
+        Task<bool> Delete(string id);
         Task<List<UserResponse>> Get();
-        Task<UserResponse?> GetById(int id);
-        Task<UserEntity?> GetByIdCheck(int id);
+        Task<UserEntity?> GetByIdCheck(string id);
         Task<bool> CheckPassword(UserEntity userEntity, string password);
         Task<UserEntity> GetByEmail(string email);
     }

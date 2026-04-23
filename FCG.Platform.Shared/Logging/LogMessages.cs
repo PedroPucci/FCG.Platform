@@ -12,7 +12,7 @@ namespace FCG.Platform.Shared.Logging
 
         #region User Not Found
 
-            public static string CannotPerformActionOnUser(string action, int userId) => $"Cannot {action} user. User with id {userId} was not found.";
+            public static string CannotPerformActionOnUser(string action, string userId) => $"Cannot {action} user. User with id {userId} was not found.";
 
         #endregion
 

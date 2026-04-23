@@ -26,12 +26,11 @@ namespace FCG.Platform.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id:int}")]
-        [Authorize]
+        [HttpPut("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateUserRequest updateUserRequest)
+        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UpdateUserRequest updateUserRequest)
         {
             var result = await _uow.UserService.Update(id, updateUserRequest);
 
@@ -41,9 +40,9 @@ namespace FCG.Platform.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] string id)
         {
             var result = await _uow.UserService.Delete(id);
 
@@ -62,10 +61,10 @@ namespace FCG.Platform.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(UserEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        public async Task<IActionResult> GetById([FromRoute] string id)
         {
             var result = await _uow.UserService.GetById(id);
             return Ok(result);

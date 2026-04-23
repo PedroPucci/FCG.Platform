@@ -6,11 +6,11 @@ namespace FCG.Platform.Domain.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<Result<UserEntity>> Add(UserResponse userEntity);
-        Task<Result<bool>> Update(int id, UpdateUserRequest updateUserRequest);
-        Task<Result<bool>> Delete(int id);
+        Task<Result<UserEntity>> Add(UserResponse userResponse);
+        Task<Result<bool>> Update(string id, UpdateUserRequest updateUserRequest);
+        Task<Result<bool>> Delete(string id);
         Task<List<UserResponse>> Get();
-        Task<Result<UserResponse>> GetById(int id);
+        Task<Result<UserResponse>> GetById(string id);
         Task<Result<string>> Login(UserForAuthenticationDTO userEntity);
     }
 }
