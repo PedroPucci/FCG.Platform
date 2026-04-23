@@ -15,7 +15,7 @@ namespace FCG.Platform.Shared.Validator
                 .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                     .WithMessage(UserErrors.User_Error_InvalidEmailFormat.Description());
 
-            RuleFor(p => p.Password)
+            RuleFor(p => p.PasswordHash)
                 .NotEmpty()
                     .WithMessage(UserErrors.User_Error_PasswordCanNotBeNullOrEmpty.Description())
                 .MinimumLength(8)
