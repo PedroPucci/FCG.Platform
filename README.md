@@ -52,6 +52,8 @@ De acordo com os requisitos do desafio, o sistema implementa as seguintes regras
 - **Unit of Work**: Padrão de design para gerenciar transações e persistência de dados de forma coesa.
 - **Migrations**: Gerenciamento de alterações no banco de dados.
 - **Xunit**: Para criação de testes unitários. 3A's (Arrange, Act, Assert).
+- **BDD com Reqnroll**: Testes de comportamento baseados em cenários (Gherkin).
+- **FluentAssertions**: Melhor legibilidade nas validações.
 ---
 ## **Como Executar o Projeto**
 ### **1. Configuração Inicial do Banco de Dados**
