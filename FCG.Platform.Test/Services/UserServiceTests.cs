@@ -3,6 +3,7 @@ using FCG.Platform.Domain.Entities.Dto;
 using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
+using FCG.Platform.Shared.Logging;
 using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 
@@ -238,177 +239,184 @@ namespace FCG.Platform.Test.Services
             transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        //[Fact]
-        //public async Task Delete_Should_Return_Success_When_User_Exists()
-        //{
-        //    var userId = 1;
+        [Fact]
+        public async Task Delete_Should_Return_Success_When_User_Exists()
+        {
+            var userId = "1";
 
-        //    var user = new UserEntity
-        //    {
-        //        Id = userId,
-        //        Name = "Pedro Ighor",
-        //        Email = "pedro@email.com",
-        //        IsActive = true
-        //    };
+            var user = new UserEntity
+            {
+                Id = userId,
+                Name = "Pedro Ighor",
+                Email = "pedro@email.com",
+                IsActive = true
+            };
 
-        //    _userRepositoryMock
-        //        .Setup(x => x.GetByIdCheck(userId))
-        //        .ReturnsAsync(user);
+            _userRepositoryMock
+                .Setup(x => x.GetByIdCheck(userId))
+                .ReturnsAsync(user);
 
-        //    _repositoryUoWMock
-        //        .Setup(x => x.SaveAsync())
-        //        .Returns(Task.CompletedTask);
+            _repositoryUoWMock
+                .Setup(x => x.SaveAsync())
+                .Returns(Task.CompletedTask);
 
-        //    _transactionMock
-        //        .Setup(x => x.CommitAsync(It.IsAny<CancellationToken>()))
-        //        .Returns(Task.CompletedTask);
+            _transactionMock
+                .Setup(x => x.CommitAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    var result = await service.Delete(userId);
+            var result = await service.Delete(userId);
 
-        //    Assert.True(result.Success);
-        //    Assert.False(user.IsActive);
+            Assert.True(result.Success);
+            Assert.False(user.IsActive);
 
-        //    _userRepositoryMock.Verify(x => x.Update(It.Is<UserEntity>(u =>
-        //        u.Id == userId &&
-        //        u.IsActive == false)), Times.Once);
+            _userRepositoryMock.Verify(x => x.Update(It.Is<UserEntity>(u =>
+                u.Id == userId &&
+                u.IsActive == false)), Times.Once);
 
-        //    _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Once);
-        //    _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
-        //    _transactionMock.Verify(x => x.Rollback(), Times.Never);
-        //}
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Once);
+            _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _transactionMock.Verify(x => x.Rollback(), Times.Never);
+        }
 
-        //[Fact]
-        //public async Task Delete_Should_Return_Error_When_User_Not_Found()
-        //{
-        //    var userId = 1;
+        [Fact]
+        public async Task Delete_Should_Return_Error_When_User_Not_Found()
+        {
+            var userId = "1";
 
-        //    _userRepositoryMock
-        //        .Setup(x => x.GetByIdCheck(userId))
-        //        .ReturnsAsync((UserEntity?)null);
+            _userRepositoryMock
+                .Setup(x => x.GetByIdCheck(userId))
+                .ReturnsAsync((UserEntity?)null);
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    var result = await service.Delete(userId);
+            var result = await service.Delete(userId);
 
-        //    Assert.False(result.Success);
-        //    Assert.Equal($"Cannot retrieve user. User with id {userId} was not found.", result.Message);
+            Assert.False(result.Success);
+            Assert.Equal(LogMessages.CannotPerformActionOnUser("retrieve", userId), result.Message);
 
-        //    _userRepositoryMock.Verify(x => x.Update(It.IsAny<UserEntity>()), Times.Never);
-        //    _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
-        //    _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
-        //    _transactionMock.Verify(x => x.Rollback(), Times.Once);
-        //}
+            _userRepositoryMock.Verify(x => x.Update(It.IsAny<UserEntity>()), Times.Never);
+            _repositoryUoWMock.Verify(x => x.SaveAsync(), Times.Never);
+            _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
+            _transactionMock.Verify(x => x.Rollback(), Times.Once);
+        }
 
-        //[Fact]
-        //public async Task Get_Should_Return_User_List_When_Successful()
-        //{
-        //    var users = new List<UserResponse>
-        //    {
-        //        new UserResponse
-        //        {
-        //            Name = "Pedro",
-        //            Email = "pedro@email.com",
-        //        },
-        //        new UserResponse
-        //        {
-        //            Name = "Maria",
-        //            Email = "maria@email.com"
-        //        }
-        //    };
+        [Fact]
+        public async Task Get_Should_Return_User_List_When_Successful()
+        {
+            var users = new List<UserResponse>
+            {
+                new UserResponse
+                {
+                    Name = "Pedro",
+                    Email = "pedro@email.com",
+                    IsActive = true
+                },
+                new UserResponse
+                {
+                    Name = "Maria",
+                    Email = "maria@email.com",
+                    IsActive = true
+                }
+            };
 
-        //    _userRepositoryMock
-        //        .Setup(x => x.Get())
-        //        .ReturnsAsync(users);
+            _userRepositoryMock
+                .Setup(x => x.Get())
+                .ReturnsAsync(users);
 
-        //    _repositoryUoWMock
-        //        .Setup(x => x.Commit());
+            _repositoryUoWMock
+                .Setup(x => x.Commit());
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    var result = await service.Get();
+            var result = await service.Get();
 
-        //    Assert.NotNull(result);
-        //    Assert.Equal(2, result.Count);
-        //    Assert.Equal("Pedro", result[0].Name);
-        //    Assert.Equal("Maria", result[1].Name);
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Equal("Pedro", result[0].Name);
+            Assert.Equal("Maria", result[1].Name);
+            Assert.True(result[0].IsActive);
+            Assert.True(result[1].IsActive);
 
-        //    _userRepositoryMock.Verify(x => x.Get(), Times.Once);
-        //    _repositoryUoWMock.Verify(x => x.Commit(), Times.Once);
-        //}
+            _userRepositoryMock.Verify(x => x.Get(), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Once);
+            _transactionMock.Verify(x => x.Rollback(), Times.Never);
+        }
 
-        //[Fact]
-        //public async Task Get_Should_Throw_Exception_When_Repository_Fails()
-        //{
-        //    _userRepositoryMock
-        //        .Setup(x => x.Get())
-        //        .ThrowsAsync(new Exception("Database error"));
+        [Fact]
+        public async Task Get_Should_Throw_Exception_When_Repository_Fails()
+        {
+            _userRepositoryMock
+                .Setup(x => x.Get())
+                .ThrowsAsync(new Exception("Database error"));
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-        //        service.Get());
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                service.Get());
 
-        //    Assert.Contains("Error to loading the list User", exception.Message);
+            Assert.Equal("Error to loading the list User. See logs for details.", exception.Message);
 
-        //    _userRepositoryMock.Verify(x => x.Get(), Times.Once);
-        //    _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
-        //    _transactionMock.Verify(x => x.Rollback(), Times.Once);
-        //}
+            _userRepositoryMock.Verify(x => x.Get(), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
+            _transactionMock.Verify(x => x.Rollback(), Times.Once);
+        }
 
-        //[Fact]
-        //public async Task GetById_Should_Return_User_When_User_Exists()
-        //{
-        //    var userId = 1;
+        [Fact]
+        public async Task GetById_Should_Return_User_When_User_Exists()
+        {
+            var userId = "1";
 
-        //    var user = new UserEntity
-        //    {
-        //        Id = userId,
-        //        Name = "Pedro",
-        //        Email = "PEDRO@EMAIL.COM"
-        //    };
+            var user = new UserEntity
+            {
+                Id = userId,
+                Name = "Pedro",
+                Email = "PEDRO@EMAIL.COM",
+                IsActive = true
+            };
 
-        //    _userRepositoryMock
-        //        .Setup(x => x.GetByIdCheck(userId))
-        //        .ReturnsAsync(user);
+            _userRepositoryMock
+                .Setup(x => x.GetByIdCheck(userId))
+                .ReturnsAsync(user);
 
-        //    _repositoryUoWMock
-        //        .Setup(x => x.Commit());
+            _repositoryUoWMock
+                .Setup(x => x.Commit());
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    var result = await service.GetById(userId);
+            var result = await service.GetById(userId);
 
-        //    Assert.True(result.Success);
-        //    Assert.NotNull(result.Data);
-        //    Assert.Equal("Pedro", result.Data.Name);
-        //    Assert.Equal("PEDRO@EMAIL.COM", result.Data.Email);
+            Assert.True(result.Success);
+            Assert.NotNull(result.Data);
+            Assert.Equal("Pedro", result.Data.Name);
+            Assert.Equal("PEDRO@EMAIL.COM", result.Data.Email);
+            Assert.True(result.Data.IsActive);
 
-        //    _userRepositoryMock.Verify(x => x.GetByIdCheck(userId), Times.Once);
-        //    _repositoryUoWMock.Verify(x => x.Commit(), Times.Once);
-        //    _transactionMock.Verify(x => x.Rollback(), Times.Never);
-        //}
+            _userRepositoryMock.Verify(x => x.GetByIdCheck(userId), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Once);
+            _transactionMock.Verify(x => x.Rollback(), Times.Never);
+        }
 
-        //[Fact]
-        //public async Task GetById_Should_Return_Error_When_User_Does_Not_Exist()
-        //{
-        //    var userId = 1;
+        [Fact]
+        public async Task GetById_Should_Return_Error_When_User_Does_Not_Exist()
+        {
+            var userId = "1";
 
-        //    _userRepositoryMock
-        //        .Setup(x => x.GetByIdCheck(userId))
-        //        .ReturnsAsync((UserEntity?)null);
+            _userRepositoryMock
+                .Setup(x => x.GetByIdCheck(userId))
+                .ReturnsAsync((UserEntity?)null);
 
-        //    var service = new UserService(_repositoryUoWMock.Object);
+            var service = new UserService(_repositoryUoWMock.Object);
 
-        //    var result = await service.GetById(userId);
+            var result = await service.GetById(userId);
 
-        //    Assert.False(result.Success);
-        //    Assert.Equal($"Cannot retrieve user. User with id {userId} was not found.", result.Message);
+            Assert.False(result.Success);
+            Assert.Equal(LogMessages.CannotPerformActionOnUser("retrieve", userId), result.Message);
 
-        //    _userRepositoryMock.Verify(x => x.GetByIdCheck(userId), Times.Once);
-        //    _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
-        //    _transactionMock.Verify(x => x.Rollback(), Times.Once);
-        //}
+            _userRepositoryMock.Verify(x => x.GetByIdCheck(userId), Times.Once);
+            _repositoryUoWMock.Verify(x => x.Commit(), Times.Never);
+            _transactionMock.Verify(x => x.Rollback(), Times.Once);
+        }
     }
 }
