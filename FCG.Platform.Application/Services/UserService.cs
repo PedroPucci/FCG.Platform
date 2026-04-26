@@ -5,6 +5,7 @@ using FCG.Platform.Domain.OperationResult;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 using FCG.Platform.Shared.Logging;
 using FCG.Platform.Shared.Validator;
+using Microsoft.AspNetCore.Identity;
 using Serilog;
 
 namespace FCG.Platform.Application.Services
@@ -12,10 +13,14 @@ namespace FCG.Platform.Application.Services
     public class UserService : IUserService
     {
         private readonly IRepositoryUoW _repositoryUoW;
+        private readonly UserManager<UserEntity> _userManager;
 
-        public UserService(IRepositoryUoW repositoryUoW)
+        public UserService(
+            IRepositoryUoW repositoryUoW,
+            UserManager<UserEntity> userManager)
         {
             _repositoryUoW = repositoryUoW;
+            _userManager = userManager;
         }
 
         public async Task<Result<UserEntity>> Add(UserResponse userReponse)
@@ -30,22 +35,42 @@ namespace FCG.Platform.Application.Services
                     Name = userReponse.Name,
                     UserName = userReponse.Email,
                     CreateDate = DateTime.UtcNow,
-                    IsActive = true,
-                    PasswordHash = userReponse.Password
+                    IsActive = true
                 };
 
-                var isValid = await IsValidUserRequest(userEntity);
+                var isValid = await IsValidUserRequest(userReponse);
                 if (!isValid.Success)
+                {
+                    Log.Information(isValid.Message);
                     return Result<UserEntity>.Error(isValid.Message);
+                }                    
 
-                userEntity.IsActive = true;
+                if (string.IsNullOrWhiteSpace(userReponse.Role))
+                {
+                    Log.Information("'Role' can not be null or empty!");
+                    return Result<UserEntity>.Error("'Role' can not be null or empty!");
+                }                    
 
-                await _repositoryUoW.UserRepository.Add(userEntity);
-                await _repositoryUoW.SaveAsync();
+                var role = userReponse.Role.Trim();
+                var createResult = await _userManager.CreateAsync(userEntity, userReponse.Password!);
+
+                if (!createResult.Succeeded)
+                {
+                    var errors = string.Join(" ", createResult.Errors.Select(e => e.Description));
+                    return Result<UserEntity>.Error(errors);
+                }
+
+                var roleResult = await _userManager.AddToRoleAsync(userEntity, role);
+
+                if (!roleResult.Succeeded)
+                {
+                    var errors = string.Join(" ", roleResult.Errors.Select(e => e.Description));
+                    return Result<UserEntity>.Error(errors);
+                }
+
                 await transaction.CommitAsync();
-
                 Log.Information(LogMessages.AddingUserSuccess(userEntity));
-                return Result<UserEntity>.Ok();
+                return Result<UserEntity>.Ok(userEntity);
             }
             catch (Exception ex)
             {
@@ -184,18 +209,18 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        private async Task<Result<UserEntity>> IsValidUserRequest(UserEntity userEntity)
+        private async Task<Result<UserResponse>> IsValidUserRequest(UserResponse userResponse)
         {
-            var requestValidator = await new UserRequestValidator().ValidateAsync(userEntity);
+            var requestValidator = await new UserRequestValidator().ValidateAsync(userResponse);
 
             if (!requestValidator.IsValid)
             {
                 string errorMessage = string.Join(" ", requestValidator.Errors.Select(e => e.ErrorMessage));
                 errorMessage = errorMessage.Replace(Environment.NewLine, "");
-                return Result<UserEntity>.Error(errorMessage);
+                return Result<UserResponse>.Error(errorMessage);
             }
 
-            return Result<UserEntity>.Ok();
+            return Result<UserResponse>.Ok();
         }
     }
 }

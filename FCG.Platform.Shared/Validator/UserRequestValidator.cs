@@ -1,11 +1,11 @@
-﻿using FCG.Platform.Domain.Entities.Entity;
+﻿using FCG.Platform.Domain.Entities.Dto.UserDto;
 using FCG.Platform.Shared.DomainErrors;
 using FCG.Platform.Shared.Helpers;
 using FluentValidation;
 
 namespace FCG.Platform.Shared.Validator
 {
-    public class UserRequestValidator : AbstractValidator<UserEntity>
+    public class UserRequestValidator : AbstractValidator<UserResponse>
     {
         public UserRequestValidator()
         {
@@ -15,7 +15,7 @@ namespace FCG.Platform.Shared.Validator
                 .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                     .WithMessage(UserErrors.User_Error_InvalidEmailFormat.Description());
 
-            RuleFor(p => p.PasswordHash)
+            RuleFor(p => p.Password)
                 .NotEmpty()
                     .WithMessage(UserErrors.User_Error_PasswordCanNotBeNullOrEmpty.Description())
                 .MinimumLength(8)

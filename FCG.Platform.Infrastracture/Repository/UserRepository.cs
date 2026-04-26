@@ -4,6 +4,7 @@ using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Infrastracture.Connections;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace FCG.Platform.Infrastracture.Repository
 {
@@ -49,16 +50,21 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public async Task<List<UserResponse>> Get()
         {
-            return await _context.Users
-                .AsNoTracking()
-                .OrderBy(user => user.Id)
-                .Select(user => new UserResponse
+            return await (
+                from user in _context.Users.AsNoTracking()
+                join userRole in _context.UserRoles.AsNoTracking()
+                    on user.Id equals userRole.UserId
+                join role in _context.Roles.AsNoTracking()
+                    on userRole.RoleId equals role.Id
+                orderby user.Id
+                select new UserResponse
                 {
                     Email = user.Email,
                     Name = user.Name,
-                    IsActive = user.IsActive,                    
-                })
-            .ToListAsync();
+                    IsActive = user.IsActive,
+                    Role = role.Name
+                }
+            ).ToListAsync();
         }
 
         public async Task<UserEntity> GetByEmail(string email)
