@@ -1,5 +1,4 @@
 ﻿using FCG.Platform.Domain.Entities.Dto.GameDto;
-using FCG.Platform.Domain.Entities.Dto.UserDto;
 using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Domain.OperationResult;
@@ -19,7 +18,7 @@ namespace FCG.Platform.Application.Services
             _repositoryUoW = repositoryUoW;
         }
 
-        public async Task<Result<GameEntity>> Add(GameResponse gameResponse)
+        public async Task<Result<GameEntity>> Add(GameResponse gameResponse, string userId)
         {
             using var transaction = _repositoryUoW.BeginTransaction();
 
@@ -39,16 +38,24 @@ namespace FCG.Platform.Application.Services
 
                 await _repositoryUoW.GameRepository.Add(gameEntity);
                 await _repositoryUoW.SaveAsync();
+
+                var userGameEntity = new UserGameEntity
+                {
+                    UserId = userId,
+                    GameId = gameEntity.Id
+                };
+
+                await _repositoryUoW.UserGameRepository.Add(userGameEntity);
+                await _repositoryUoW.SaveAsync();
+
                 await transaction.CommitAsync();
 
-                Log.Information(LogMessages.AddingGameSuccess(gameEntity));
-                return Result<GameEntity>.Ok();
+                return Result<GameEntity>.Ok(gameEntity);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Log.Error(LogMessages.AddingGameError(ex));
-                return Result<GameEntity>.Error($"Error to add a new Game: {ex.Message}");
+                return Result<GameEntity>.Error($"Error to add a new Game: {ex.InnerException?.Message ?? ex.Message}");
             }
         }
 

@@ -64,7 +64,7 @@ namespace FCG.Platform.Shared.Logging
         #region Game CRUD
 
             public static string AddingGameError(Exception ex) => $"Error adding Game. Details: {ex.Message}";
-            public static string AddingGameSuccess(GameEntity gameEntity) => $"Game name:{gameEntity.Name} - id:{gameEntity.Id} added successfully.";
+            public static string AddingGameSuccess(GameEntity gameEntity) => $"Game name:{gameEntity.Name} added successfully.";
 
             public static string UpdatingErrorGame(Exception ex) => $"Error updating Game. Details: {ex.Message}";
             public static string UpdatingSuccessGame() => "Game updated successfully.";

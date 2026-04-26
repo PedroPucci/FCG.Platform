@@ -6,7 +6,7 @@ namespace FCG.Platform.Domain.Interfaces.Services
 {
     public interface IGameService
     {
-        Task<Result<GameEntity>> Add(GameResponse gameResponse);
+        Task<Result<GameEntity>> Add(GameResponse gameResponse, string userId);
         Task<Result<GameEntity>> Update(GameEntity gameEntity);
         Task<bool> Delete(int id);
         Task<List<GameEntity>> Get();

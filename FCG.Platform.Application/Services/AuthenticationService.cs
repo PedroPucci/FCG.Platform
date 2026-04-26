@@ -60,8 +60,12 @@ namespace FCG.Platform.Application.Services
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.Id.ToString())
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Email, user.Email ?? "")
             };
+
+            if (!string.IsNullOrWhiteSpace(user.UserName))
+                claims.Add(new Claim(ClaimTypes.Name, user.UserName));
 
             if (!string.IsNullOrWhiteSpace(user.Name))
                 claims.Add(new Claim(ClaimTypes.GivenName, user.Name));

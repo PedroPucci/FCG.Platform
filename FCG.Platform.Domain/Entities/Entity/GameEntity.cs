@@ -1,10 +1,11 @@
-﻿using FCG.Platform.Domain.Entities.General;
-
-namespace FCG.Platform.Domain.Entities.Entity
+﻿namespace FCG.Platform.Domain.Entities.Entity
 {
-    public class GameEntity : BaseEntity
+    public class GameEntity
     {
+        public int Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime? CreateDate { get; set; } = DateTime.UtcNow;
     }
 }

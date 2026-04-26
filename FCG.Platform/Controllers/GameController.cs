@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
+using System.Security.Claims;
 
 namespace FCG.Platform.Controllers
 {
@@ -26,7 +27,12 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Add([FromBody] GameResponse gameResponse)
         {
-            var result = await _uow.GameService.Add(gameResponse);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("Usuário não autenticado.");
+
+            var result = await _uow.GameService.Add(gameResponse, userId);
             return Ok(result);
         }
 

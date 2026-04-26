@@ -9,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 
 LogExtension.InitializeLogger();
 var loggerSerialLog = LogExtension.GetLogger();

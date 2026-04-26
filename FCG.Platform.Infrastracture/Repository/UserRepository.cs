@@ -31,7 +31,7 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public UserEntity Update(UserEntity userEntity)
         {
-            return _context.UserEntity.Update(userEntity).Entity;
+            return _context.Users.Update(userEntity).Entity;
         }
 
         public async Task<bool> Delete(string id)
@@ -41,7 +41,7 @@ namespace FCG.Platform.Infrastracture.Repository
             if (user == null)
                 return false;
 
-            _context.UserEntity.Remove(user);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return true;
@@ -49,7 +49,7 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public async Task<List<UserResponse>> Get()
         {
-            return await _context.UserEntity
+            return await _context.Users
                 .AsNoTracking()
                 .OrderBy(user => user.Id)
                 .Select(user => new UserResponse
@@ -75,7 +75,7 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public async Task<UserEntity?> GetByIdCheck(string id)
         {
-            return await _context.UserEntity.FindAsync(id);
+            return await _context.Users.FindAsync(id);
         }
     }
 }

@@ -128,9 +128,10 @@ namespace FCG.Platform.Extensions
             services.AddAuthorization();
 
             services.AddScoped<IRepositoryUoW, RepositoryUoW>();
-            services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();            
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGameService, GameService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddIdentity<UserEntity, ProfileEntity>(o =>
             {

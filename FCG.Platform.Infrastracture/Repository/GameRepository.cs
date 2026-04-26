@@ -1,7 +1,6 @@
 ﻿using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Infrastracture.Connections;
-using Microsoft.EntityFrameworkCore;
 
 namespace FCG.Platform.Infrastracture.Repository
 {
@@ -16,7 +15,7 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public async Task<GameEntity> Add(GameEntity gameEntity)
         {
-            var result = await _context.GameEntity.AddAsync(gameEntity);
+            var result = await _context.Games.AddAsync(gameEntity);
             await _context.SaveChangesAsync();
 
             return result.Entity;
@@ -24,7 +23,7 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public GameEntity Update(GameEntity gameEntity)
         {
-            return _context.GameEntity.Update(gameEntity).Entity;
+            return _context.Games.Update(gameEntity).Entity;
         }
 
         public async Task<bool> Delete(int id)
@@ -34,7 +33,7 @@ namespace FCG.Platform.Infrastracture.Repository
             if (game == null)
                 return false;
 
-            _context.GameEntity.Remove(game);
+            _context.Games.Remove(game);
             await _context.SaveChangesAsync();
 
             return true;
@@ -42,21 +41,22 @@ namespace FCG.Platform.Infrastracture.Repository
 
         public async Task<List<GameEntity>> Get()
         {
-            return await _context.GameEntity
-            .AsNoTracking()
-            .OrderBy(game => game.Id)
-            .Select(game => new GameEntity
-            {
-                Id = game.Id,                
-                Name = game.Name,
-                Description = game.Description
-            })
-            .ToListAsync();
+            //return await _context.GameEntity
+            //.AsNoTracking()
+            //.OrderBy(game => game.Id)
+            //.Select(game => new GameEntity
+            //{
+            //    Id = game.Id,                
+            //    Name = game.Name,
+            //    Description = game.Description
+            //})
+            //.ToListAsync();
+            return null;
         }
 
         public async Task<GameEntity?> GetById(int id)
         {
-            return await _context.GameEntity.FindAsync(id);
+            return await _context.Games.FindAsync(id);
         }
     }
 }

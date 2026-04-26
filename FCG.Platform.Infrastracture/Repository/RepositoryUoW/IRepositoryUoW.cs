@@ -7,6 +7,7 @@ namespace FCG.Platform.Infrastracture.Repository.RepositoryUoW
     {
         IUserRepository UserRepository { get; }
         IGameRepository GameRepository { get; }
+        IUserGameRepository UserGameRepository { get; }
 
         Task SaveAsync();
         void Commit();
