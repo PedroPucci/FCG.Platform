@@ -76,7 +76,7 @@ namespace FCG.Platform.Shared.Logging
             public static string GetAllGameSuccess() => "Games retrieved successfully.";
 
             public static string GetByGameIdError(Exception ex) => $"Error retrieving Game by id. Details: {ex.Message}";
-            public static string GetByGameIdSuccess() => "Game retrieved successfully.";
+            public static string GetByGameIdSuccess(GameEntity gameEntity) => $"Game name:{gameEntity.Name} retrieved successfully.";
 
         #endregion
     }

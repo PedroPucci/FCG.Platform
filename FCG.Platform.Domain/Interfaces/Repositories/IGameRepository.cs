@@ -1,4 +1,5 @@
-﻿using FCG.Platform.Domain.Entities.Entity;
+﻿using FCG.Platform.Domain.Entities.Dto.GameDto;
+using FCG.Platform.Domain.Entities.Entity;
 
 namespace FCG.Platform.Domain.Interfaces.Repositories
 {
@@ -7,7 +8,7 @@ namespace FCG.Platform.Domain.Interfaces.Repositories
         Task<GameEntity> Add(GameEntity gameEntity);
         GameEntity Update(GameEntity gameEntity);
         Task<bool> Delete(int id);
-        Task<List<GameEntity>> Get();
+        Task<List<GameResponse>> Get();
         Task<GameEntity?> GetById(int id);
     }
 }

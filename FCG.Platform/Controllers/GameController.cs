@@ -1,5 +1,6 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
 using FCG.Platform.Domain.Entities.Dto.GameDto;
+using FCG.Platform.Domain.Entities.Dto.UserDto;
 using FCG.Platform.Domain.Entities.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -42,9 +43,14 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] GameEntity gameEntity)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGameRequest updateGameRequest)
         {
-            return Ok();
+            var result = await _uow.GameService.Update(id, updateGameRequest);
+
+            if (!result.Success)
+                return NotFound(result);
+
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]
@@ -52,7 +58,12 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            return Ok();
+            var result = await _uow.GameService.Delete(id);
+
+            //if (!result.Success)
+            //    return NotFound(result);
+
+            return NoContent();
         }
 
         [HttpGet("all")]
@@ -61,7 +72,8 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            var result = await _uow.GameService.Get();
+            return Ok(result);
         }
 
         [HttpGet("{id:int}")]
@@ -70,7 +82,8 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            return Ok();
+            var result = await _uow.GameService.GetById(id);
+            return Ok(result);
         }
     }
 }

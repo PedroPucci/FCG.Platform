@@ -1,6 +1,8 @@
-﻿using FCG.Platform.Domain.Entities.Entity;
+﻿using FCG.Platform.Domain.Entities.Dto.GameDto;
+using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Repositories;
 using FCG.Platform.Infrastracture.Connections;
+using Microsoft.EntityFrameworkCore;
 
 namespace FCG.Platform.Infrastracture.Repository
 {
@@ -39,19 +41,17 @@ namespace FCG.Platform.Infrastracture.Repository
             return true;
         }
 
-        public async Task<List<GameEntity>> Get()
+        public async Task<List<GameResponse>> Get()
         {
-            //return await _context.GameEntity
-            //.AsNoTracking()
-            //.OrderBy(game => game.Id)
-            //.Select(game => new GameEntity
-            //{
-            //    Id = game.Id,                
-            //    Name = game.Name,
-            //    Description = game.Description
-            //})
-            //.ToListAsync();
-            return null;
+            return await _context.Games
+            .AsNoTracking()
+            .OrderBy(game => game.Id)
+            .Select(game => new GameResponse
+            {
+                Name = game.Name,
+                Description = game.Description
+            })
+            .ToListAsync();
         }
 
         public async Task<GameEntity?> GetById(int id)
