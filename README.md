@@ -54,6 +54,7 @@ De acordo com os requisitos do desafio, o sistema implementa as seguintes regras
 - **Xunit**: Para criação de testes unitários. 3A's (Arrange, Act, Assert).
 - **BDD com Reqnroll**: Testes de comportamento baseados em cenários (Gherkin).
 - **FluentAssertions**: Melhor legibilidade nas validações.
+- **ASP.NET Core Identity**: Implementação de autenticação e autorização baseada em identidade, com gerenciamento de usuários, roles e controle de acesso seguro à aplicação.
 ---
 ## **Como Executar o Projeto**
 ### **1. Configuração Inicial do Banco de Dados**
