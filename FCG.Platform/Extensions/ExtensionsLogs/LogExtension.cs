@@ -1,5 +1,4 @@
-﻿using Serilog.Events;
-using Serilog;
+﻿using Serilog;
 using ILogger = Serilog.ILogger;
 
 namespace FCG.Platform.Extensions.ExtensionsLogs

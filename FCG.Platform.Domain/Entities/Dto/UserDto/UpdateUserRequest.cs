@@ -1,4 +1,4 @@
-﻿namespace FCG.Platform.Domain.Entities.Dto
+﻿namespace FCG.Platform.Domain.Entities.Dto.UserDto
 {
     public class UpdateUserRequest
     {

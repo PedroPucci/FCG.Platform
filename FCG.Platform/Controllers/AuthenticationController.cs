@@ -1,5 +1,5 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
-using FCG.Platform.Domain.Entities.Dto;
+using FCG.Platform.Domain.Entities.Dto.UserDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

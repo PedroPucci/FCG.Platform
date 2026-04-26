@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Reqnroll;
-using FCG.Platform.Domain.Entities.Dto;
 using FCG.Platform.Domain.Entities.Entity;
+using FCG.Platform.Domain.Entities.Dto.UserDto;
 
 namespace FCG.Plataform.Bdd.Steps
 {

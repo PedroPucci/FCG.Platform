@@ -1,7 +1,12 @@
-﻿using FCG.Platform.Domain.Entities.Entity;
+﻿using FCG.Platform.Domain.Entities.Dto.GameDto;
+using FCG.Platform.Domain.Entities.Dto.UserDto;
+using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Domain.OperationResult;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
+using FCG.Platform.Shared.Logging;
+using FCG.Platform.Shared.Validator;
+using Serilog;
 
 namespace FCG.Platform.Application.Services
 {
@@ -14,9 +19,37 @@ namespace FCG.Platform.Application.Services
             _repositoryUoW = repositoryUoW;
         }
 
-        public Task<Result<GameEntity>> Add(GameEntity gameEntity)
+        public async Task<Result<GameEntity>> Add(GameResponse gameResponse)
         {
-            throw new NotImplementedException();
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                var gameEntity = new GameEntity
+                {
+                    Name = gameResponse.Name,
+                    Description = gameResponse.Description,
+                    CreateDate = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                var isValid = await IsValidGameRequest(gameEntity);
+                if (!isValid.Success)
+                    return Result<GameEntity>.Error(isValid.Message);
+
+                await _repositoryUoW.GameRepository.Add(gameEntity);
+                await _repositoryUoW.SaveAsync();
+                await transaction.CommitAsync();
+
+                Log.Information(LogMessages.AddingGameSuccess(gameEntity));
+                return Result<GameEntity>.Ok();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Log.Error(LogMessages.AddingGameError(ex));
+                return Result<GameEntity>.Error($"Error to add a new Game: {ex.Message}");
+            }
         }
 
         public Task<bool> Delete(int id)
@@ -37,6 +70,20 @@ namespace FCG.Platform.Application.Services
         public Task<Result<GameEntity>> Update(GameEntity gameEntity)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<Result<GameEntity>> IsValidGameRequest(GameEntity gameEntity)
+        {
+            var requestValidator = await new GameRequestValidator().ValidateAsync(gameEntity);
+
+            if (!requestValidator.IsValid)
+            {
+                string errorMessage = string.Join(" ", requestValidator.Errors.Select(e => e.ErrorMessage));
+                errorMessage = errorMessage.Replace(Environment.NewLine, "");
+                return Result<GameEntity>.Error(errorMessage);
+            }
+
+            return Result<GameEntity>.Ok();
         }
     }
 }

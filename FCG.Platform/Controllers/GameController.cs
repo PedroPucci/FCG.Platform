@@ -1,4 +1,5 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
+using FCG.Platform.Domain.Entities.Dto.GameDto;
 using FCG.Platform.Domain.Entities.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,9 +24,10 @@ namespace FCG.Platform.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Add([FromBody] GameEntity gameEntity)
+        public async Task<IActionResult> Add([FromBody] GameResponse gameResponse)
         {
-            return Ok();
+            var result = await _uow.GameService.Add(gameResponse);
+            return Ok(result);
         }
 
         [HttpPut("{id:int}")]
