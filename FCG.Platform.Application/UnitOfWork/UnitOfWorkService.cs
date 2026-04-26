@@ -52,7 +52,9 @@ namespace FCG.Platform.Application.UnitOfWork
             get
             {
                 if (authenticationService is null)
-                    authenticationService = new AuthenticationService(_repositoryUoW);
+                    authenticationService = new AuthenticationService(
+                        _repositoryUoW, 
+                        _userManager);
                 return authenticationService;
             }
         }

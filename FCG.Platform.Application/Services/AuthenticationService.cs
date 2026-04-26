@@ -4,6 +4,7 @@ using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Domain.OperationResult;
 using FCG.Platform.Infrastracture.Repository.RepositoryUoW;
 using FCG.Platform.Shared.Logging;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,10 +16,14 @@ namespace FCG.Platform.Application.Services
     public class AuthenticationService : IAuthenticationUserService
     {
         private readonly IRepositoryUoW _repositoryUoW;
+        private readonly UserManager<UserEntity> _userManager;
 
-        public AuthenticationService(IRepositoryUoW repositoryUoW)
+        public AuthenticationService(
+          IRepositoryUoW repositoryUoW,
+          UserManager<UserEntity> userManager)
         {
             _repositoryUoW = repositoryUoW;
+            _userManager = userManager;
         }
 
         public async Task<Result<string>> Login(UserForAuthenticationDTO userEntity)
@@ -38,7 +43,7 @@ namespace FCG.Platform.Application.Services
                 issuer: "PedroIghor",
                 audience: "https://localhost:5001",
                 claims: claims,
-                expires: DateTime.UtcNow.AddSeconds(3600),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: signingCredentials
             );
             Log.Information(LogMessages.TokenGenerateSuccess());
@@ -69,6 +74,13 @@ namespace FCG.Platform.Application.Services
 
             if (!string.IsNullOrWhiteSpace(user.Name))
                 claims.Add(new Claim(ClaimTypes.GivenName, user.Name));
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             return claims;
         }

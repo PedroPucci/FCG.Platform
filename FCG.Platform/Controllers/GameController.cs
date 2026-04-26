@@ -22,6 +22,7 @@ namespace FCG.Platform.Controllers
             _uow = uow;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -37,6 +38,7 @@ namespace FCG.Platform.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPut("{id:int}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,6 +55,7 @@ namespace FCG.Platform.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

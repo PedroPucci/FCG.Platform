@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -23,6 +24,7 @@ namespace FCG.Platform.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddEndpointsApiExplorer();
+
             var jwtSettings = config.GetSection("JwtSettings");
             var issuer = jwtSettings["Issuer"];
             var audience = jwtSettings["Audience"];
@@ -32,6 +34,45 @@ namespace FCG.Platform.Extensions
             {
                 opt.UseSqlServer(config.GetConnectionString("WebApiDatabase"));
             });
+
+            services.AddIdentity<UserEntity, ProfileEntity>(o =>
+            {
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = true;
+                o.Password.RequireUppercase = true;
+                o.Password.RequireNonAlphanumeric = true;
+                o.Password.RequiredLength = 10;
+                o.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders();
+
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(secretKey!)),
+
+                    ClockSkew = TimeSpan.FromMinutes(5),
+                    RoleClaimType = ClaimTypes.Role
+                };
+            });
+
+            services.AddAuthorization();
 
             services.AddSwaggerGen(opt =>
             {
@@ -69,7 +110,7 @@ namespace FCG.Platform.Extensions
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Digite: Bearer {seu_token}"
+                    Description = "Cole apenas o token JWT, sem escrever Bearer."
                 });
 
                 opt.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -104,46 +145,16 @@ namespace FCG.Platform.Extensions
                 });
             });
 
-            services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = issuer,
-                    ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(secretKey)),
-                    ClockSkew = TimeSpan.FromMinutes(5)
-                };
-            });
-
-            services.AddAuthorization();
-
             services.AddScoped<IRepositoryUoW, RepositoryUoW>();
-            services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();            
+            services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
             services.AddScoped<IUserRepository, UserRepository>();
+
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IUserService, UserService>();
 
-            services.AddIdentity<UserEntity, ProfileEntity>(o =>
-            {
-                o.Password.RequireDigit = true;
-                o.Password.RequireLowercase = true;
-                o.Password.RequireUppercase = true;
-                o.Password.RequireNonAlphanumeric = true;
-                o.Password.RequiredLength = 10;
-                o.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<DataContext>()
-            .AddDefaultTokenProviders();
+            services.AddScoped<GameService>();
+            services.AddScoped<UserService>();
+            services.AddScoped<AuthenticationService>();
 
             services.AddMvc().AddJsonOptions(options =>
             {

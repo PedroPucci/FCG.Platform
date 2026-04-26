@@ -1,6 +1,7 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
 using FCG.Platform.Domain.Entities.Dto.UserDto;
 using FCG.Platform.Domain.Entities.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FCG.Platform.Controllers
@@ -16,6 +17,7 @@ namespace FCG.Platform.Controllers
             _uow = uow;
         }
 
+        [AllowAnonymous]
         [HttpPost()]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -25,7 +27,8 @@ namespace FCG.Platform.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id:guid}")]
+        [AllowAnonymous]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,7 +42,8 @@ namespace FCG.Platform.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Administrator")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
@@ -51,6 +55,7 @@ namespace FCG.Platform.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpGet("all")]
         [ProducesResponseType(typeof(List<UserEntity>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,7 +65,8 @@ namespace FCG.Platform.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:guid}")]
+        [Authorize(Roles = "Administrator")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromRoute] string id)
