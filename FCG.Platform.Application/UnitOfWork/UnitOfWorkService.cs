@@ -9,16 +9,19 @@ namespace FCG.Platform.Application.UnitOfWork
     {
         private readonly IRepositoryUoW _repositoryUoW;
         private readonly UserManager<UserEntity> _userManager;
+        private readonly RoleManager<ProfileEntity> _roleManager;
         private UserService userService;
         private GameService gameService;
         private AuthenticationService authenticationService;
 
         public UnitOfWorkService(
-            IRepositoryUoW repositoryUoW, 
-            UserManager<UserEntity> userManager)
+            IRepositoryUoW repositoryUoW,
+            UserManager<UserEntity> userManager,
+            RoleManager<ProfileEntity> roleManager)
         {
             _repositoryUoW = repositoryUoW;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public UserService UserService
@@ -26,7 +29,10 @@ namespace FCG.Platform.Application.UnitOfWork
             get
             {
                 if (userService is null)
-                    userService = new UserService(_repositoryUoW, _userManager);
+                    userService = new UserService(
+                        _repositoryUoW, 
+                        _userManager, 
+                        _roleManager);
                 return userService;
             }
         }

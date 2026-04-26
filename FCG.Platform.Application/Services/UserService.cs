@@ -14,13 +14,16 @@ namespace FCG.Platform.Application.Services
     {
         private readonly IRepositoryUoW _repositoryUoW;
         private readonly UserManager<UserEntity> _userManager;
+        private readonly RoleManager<ProfileEntity> _roleManager;
 
         public UserService(
             IRepositoryUoW repositoryUoW,
-            UserManager<UserEntity> userManager)
+            UserManager<UserEntity> userManager,
+            RoleManager<ProfileEntity> roleManager)
         {
             _repositoryUoW = repositoryUoW;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<Result<UserEntity>> Add(UserResponse userReponse)
@@ -49,9 +52,18 @@ namespace FCG.Platform.Application.Services
                 {
                     Log.Information("'Role' can not be null or empty!");
                     return Result<UserEntity>.Error("'Role' can not be null or empty!");
-                }                    
+                }
 
                 var role = userReponse.Role.Trim();
+
+                var roleExists = await _roleManager.RoleExistsAsync(role);
+
+                if (!roleExists)
+                {
+                    Log.Information("Invalid role.");
+                    return Result<UserEntity>.Error("Invalid role. Use only: Administrator or Usuario.");
+                }
+
                 var createResult = await _userManager.CreateAsync(userEntity, userReponse.Password!);
 
                 if (!createResult.Succeeded)
