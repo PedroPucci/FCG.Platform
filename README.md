@@ -67,7 +67,7 @@ De acordo com os requisitos do desafio, o sistema implementa as seguintes regras
      add-migration PrimeiraMigracao
      update-database
      ```
-   - Isso criará e configurará o banco de dados no PostgreSQL.
+   - Isso criará e configurará o banco de dados no Microsoft SQL Server.
 ---
 ### **2. Executando o Projeto**
 1. Abra o projeto no Visual Studio 2022.
