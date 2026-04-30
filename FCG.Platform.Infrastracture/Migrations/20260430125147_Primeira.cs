@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FCG.Platform.Infrastracture.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimeiraMigracao : Migration
+    public partial class Primeira : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

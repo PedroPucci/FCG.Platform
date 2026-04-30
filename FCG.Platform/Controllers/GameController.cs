@@ -1,6 +1,5 @@
 ﻿using FCG.Platform.Application.UnitOfWork;
 using FCG.Platform.Domain.Entities.Dto.GameDto;
-using FCG.Platform.Domain.Entities.Dto.UserDto;
 using FCG.Platform.Domain.Entities.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -62,10 +61,6 @@ namespace FCG.Platform.Controllers
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var result = await _uow.GameService.Delete(id);
-
-            //if (!result.Success)
-            //    return NotFound(result);
-
             return NoContent();
         }
 

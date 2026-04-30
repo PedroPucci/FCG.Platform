@@ -43,7 +43,7 @@ namespace FCG.Platform.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut("{id}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

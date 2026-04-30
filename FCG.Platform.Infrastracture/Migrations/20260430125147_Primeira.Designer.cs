@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FCG.Platform.Infrastracture.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260426141841_PrimeiraMigracao")]
-    partial class PrimeiraMigracao
+    [Migration("20260430125147_Primeira")]
+    partial class Primeira
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
