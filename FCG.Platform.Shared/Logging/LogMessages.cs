@@ -8,6 +8,7 @@ namespace FCG.Platform.Shared.Logging
 
             public static string LoginUserSuccess(UserEntity userEntity) => $"User logged in successfully. User name:{userEntity.Name}";
             public static string TokenGenerateSuccess() => "Token generated successfully.";
+            public static string InvalidLoginInputs() => "User login failed. Invalid email or password.";
 
         #endregion
 

@@ -28,8 +28,27 @@ namespace FCG.Platform.Application.Services
 
         public async Task<Result<string>> Login(UserForAuthenticationDTO userEntity)
         {
+            if (string.IsNullOrWhiteSpace(userEntity.Email) || string.IsNullOrWhiteSpace(userEntity.Password))
+            {
+                Log.Warning(LogMessages.InvalidUserInputs());
+                return Result<string>.Error("Email and password are required.");
+            }
+
             var response = await _repositoryUoW.UserRepository.GetByEmail(userEntity.Email);
-            var result = await _repositoryUoW.UserRepository.CheckPassword(response, userEntity.Password);
+
+            if (response is null)
+            {
+                Log.Warning(LogMessages.InvalidLoginInputs());
+                return Result<string>.Error("Invalid email or password.");
+            }
+
+            var isPasswordValid = await _repositoryUoW.UserRepository.CheckPassword(response, userEntity.Password);
+
+            if (!isPasswordValid)
+            {
+                Log.Warning(LogMessages.InvalidUserInputs());
+                return Result<string>.Error("Invalid email or password.");            
+            }
 
             var token = await CreateAccessTokenAsync(response);
             Log.Information(LogMessages.LoginUserSuccess(response));
