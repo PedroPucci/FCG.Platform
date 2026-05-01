@@ -7,5 +7,6 @@
         public string? Description { get; set; }
         public bool IsActive { get; set; }
         public DateTime? CreateDate { get; set; } = DateTime.UtcNow;
+        public DateTime? ModificationDate { get; set; }
     }
 }

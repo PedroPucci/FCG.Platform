@@ -67,7 +67,7 @@ namespace FCG.Platform.Shared.Logging
             public static string AddingGameSuccess(GameEntity gameEntity) => $"Game name:{gameEntity.Name} added successfully.";
 
             public static string UpdatingErrorGame(Exception ex) => $"Error updating Game. Details: {ex.Message}";
-            public static string UpdatingSuccessGame() => "Game updated successfully.";
+            public static string UpdatingSuccessGame(GameEntity gameEntity) => $"Game name:{gameEntity.Name} updated successfully.";
 
             public static string DeleteGameError(Exception ex) => $"Error deleting Game. Details: {ex.Message}";
             public static string DeleteGameSuccess() => "Game deleted successfully.";

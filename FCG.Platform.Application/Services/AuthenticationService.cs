@@ -66,8 +66,8 @@ namespace FCG.Platform.Application.Services
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Email, user.Email ?? ""),
-                new Claim(ClaimTypes.Role, "Administrator")
+                new(ClaimTypes.Email, user.Email ?? "")
+                //new Claim(ClaimTypes.Role, "Administrator")
             };
 
             if (!string.IsNullOrWhiteSpace(user.UserName))

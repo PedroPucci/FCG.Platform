@@ -1,4 +1,5 @@
 ﻿using FCG.Platform.Domain.Entities.Dto.GameDto;
+using FCG.Platform.Domain.Entities.Dto.UserDto;
 using FCG.Platform.Domain.Entities.Entity;
 using FCG.Platform.Domain.Interfaces.Services;
 using FCG.Platform.Domain.OperationResult;
@@ -57,9 +58,38 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public Task<Result<GameEntity>> Update(int id, UpdateGameRequest updateGameRequest)
+        public async Task<Result<bool>> Update(int id, UpdateGameRequest updateGameRequest)
         {
-            throw new NotImplementedException();
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                var game = await _repositoryUoW.GameRepository.GetById(id);
+
+                if (game is null)
+                {
+                    var message = LogMessages.CannotPerformActionOnGame("update", id);
+                    Log.Error(message);
+                    return Result<bool>.Error(message);
+                }
+
+                game.Name = updateGameRequest.Name;
+                game.Description = updateGameRequest.Description;
+                game.ModificationDate = DateTime.UtcNow;
+
+                _repositoryUoW.GameRepository.Update(game);
+                await _repositoryUoW.SaveAsync();
+                await transaction.CommitAsync();
+
+                Log.Information(LogMessages.UpdatingSuccessGame(game));
+                return Result<bool>.Ok(true);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(LogMessages.UpdatingErrorGame(ex));
+                throw new InvalidOperationException($"Failed to update game with id {id}. See logs for details.", ex);
+            }
         }
 
         public Task<bool> Delete(int id)
