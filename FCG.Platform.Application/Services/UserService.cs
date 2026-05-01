@@ -84,11 +84,17 @@ namespace FCG.Platform.Application.Services
                 Log.Information(LogMessages.AddingUserSuccess(userEntity));
                 return Result<UserEntity>.Ok(userEntity);
             }
+            //catch (Exception ex)
+            //{
+            //    await transaction.RollbackAsync();
+            //    Log.Error(LogMessages.AddingUserError(ex));
+            //    return Result<UserEntity>.Error($"Error to add a new User: {ex.Message}");
+            //}
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Log.Error(LogMessages.AddingUserError(ex));
-                return Result<UserEntity>.Error($"Error to add a new User: {ex.Message}");
+                Log.Error(ex, "Error to add a new User");
+                throw;
             }
         }
 
