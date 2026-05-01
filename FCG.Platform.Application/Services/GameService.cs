@@ -77,6 +77,10 @@ namespace FCG.Platform.Application.Services
                 game.Description = updateGameRequest.Description;
                 game.ModificationDate = DateTime.UtcNow;
 
+                var isValid = await IsValidGameRequest(game);
+                if (!isValid.Success)
+                    return Result<bool>.Error(isValid.Message);
+
                 _repositoryUoW.GameRepository.Update(game);
                 await _repositoryUoW.SaveAsync();
                 await transaction.CommitAsync();
