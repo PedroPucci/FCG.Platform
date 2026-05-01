@@ -265,7 +265,7 @@ namespace FCG.Platform.Test.Services
         }
 
         [Fact]
-        public async Task Should_Rollback_And_Return_Error_When_Exception_Occurs_On_Add()
+        public async Task Should_Rollback_And_Throw_Exception_When_Exception_Occurs_On_Add()
         {
             var request = new UserResponse
             {
@@ -279,10 +279,9 @@ namespace FCG.Platform.Test.Services
                 .Setup(x => x.RoleExistsAsync(request.Role))
                 .ThrowsAsync(new Exception("Database error"));
 
-            var result = await _service.Add(request);
+            var exception = await Assert.ThrowsAsync<Exception>(() => _service.Add(request));
 
-            Assert.False(result.Success);
-            Assert.Contains("Database error", result.Message);
+            Assert.Equal("Database error", exception.Message);
 
             _transactionMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
             _transactionMock.Verify(x => x.RollbackAsync(It.IsAny<CancellationToken>()), Times.Once);
