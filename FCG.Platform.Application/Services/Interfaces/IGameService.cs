@@ -8,7 +8,7 @@ namespace FCG.Platform.Domain.Interfaces.Services
     {
         Task<Result<GameEntity>> Add(GameResponse gameResponse, string userId);
         Task<Result<bool>> Update(int id, UpdateGameRequest updateGameRequest);
-        Task<bool> Delete(int id);
+        Task<Result<bool>> Delete(int id);
         Task<List<GameResponse>> Get();
         Task<Result<GameResponse>> GetById(int id);
     }

@@ -96,9 +96,40 @@ namespace FCG.Platform.Application.Services
             }
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<Result<bool>> Delete(int id)
         {
-            throw new NotImplementedException();
+            using var transaction = _repositoryUoW.BeginTransaction();
+
+            try
+            {
+                var game = await _repositoryUoW.GameRepository.GetById(id);
+
+                if (game is null)
+                {
+                    transaction.Rollback();
+
+                    var message = LogMessages.CannotPerformActionOnGame("retrieve", id);
+                    Log.Error(message);
+
+                    return Result<bool>.Error(message);
+                }
+
+                game.IsActive = false;
+                game.ModificationDate = DateTime.UtcNow;
+
+                _repositoryUoW.GameRepository.Update(game);
+                await _repositoryUoW.SaveAsync();
+                await transaction.CommitAsync();
+
+                Log.Information(LogMessages.DeleteGameSuccess(game));
+                return Result<bool>.Ok();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(LogMessages.DeleteGameError(ex));
+                throw new InvalidOperationException($"Failed to delete game with id {id}. See logs for details.", ex);
+            }
         }
 
         public async Task<List<GameResponse>> Get()
