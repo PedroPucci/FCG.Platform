@@ -76,6 +76,7 @@ namespace FCG.Platform.Application.Services
                 game.Name = updateGameRequest.Name;
                 game.Description = updateGameRequest.Description;
                 game.ModificationDate = DateTime.UtcNow;
+                game.IsActive = updateGameRequest.IsActive;
 
                 var isValid = await IsValidGameRequest(game);
                 if (!isValid.Success)
