@@ -70,6 +70,29 @@ namespace FCG.Platform.Extensions
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RoleClaimType = ClaimTypes.Role
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse();
+
+                        context.Response.StatusCode = 401;
+                        context.Response.ContentType = "application/json";
+
+                        return context.Response.WriteAsync(
+                            "{\"success\": false, \"message\": \"Invalid or expired token. Please log in again.\"}");
+                    },
+
+                    OnForbidden = context =>
+                    {
+                        context.Response.StatusCode = 403;
+                        context.Response.ContentType = "application/json";
+
+                        return context.Response.WriteAsync(
+                            "{\"success\": false, \"message\": \"You do not have permission to access this resource.\"}");
+                    }
+                };
             });
 
             services.AddAuthorization();
